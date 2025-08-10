@@ -23,26 +23,18 @@ export default function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
-              <Link href="/">
-                <a className={`text-secondary hover:text-accent transition-colors duration-200 font-medium ${location === '/' ? 'text-accent' : ''}`}>
-                  Home
-                </a>
+              <Link href="/" className={`text-secondary hover:text-accent transition-colors duration-200 font-medium ${location === '/' ? 'text-accent' : ''}`}>
+                Home
               </Link>
-              <Link href="/books">
-                <a className={`text-secondary hover:text-accent transition-colors duration-200 font-medium ${location === '/books' ? 'text-accent' : ''}`}>
-                  Books
-                </a>
+              <Link href="/books" className={`text-secondary hover:text-accent transition-colors duration-200 font-medium ${location === '/books' ? 'text-accent' : ''}`}>
+                Books
               </Link>
-              <Link href="/videos">
-                <a className={`text-secondary hover:text-accent transition-colors duration-200 font-medium ${location === '/videos' ? 'text-accent' : ''}`}>
-                  Videos
-                </a>
+              <Link href="/videos" className={`text-secondary hover:text-accent transition-colors duration-200 font-medium ${location === '/videos' ? 'text-accent' : ''}`}>
+                Videos
               </Link>
               {isAuthenticated && (
-                <Link href="/admin">
-                  <a className={`text-secondary hover:text-accent transition-colors duration-200 font-medium ${location === '/admin' ? 'text-accent' : ''}`}>
-                    Admin
-                  </a>
+                <Link href="/admin" className={`text-secondary hover:text-accent transition-colors duration-200 font-medium ${location === '/admin' ? 'text-accent' : ''}`}>
+                  Admin
                 </Link>
               )}
               <button 
@@ -75,38 +67,34 @@ export default function Navbar() {
       {isMobileMenuOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-100">
-            <Link href="/">
-              <a 
-                className="block px-3 py-2 text-secondary hover:text-accent transition-colors duration-200"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Home
-              </a>
+            <Link 
+              href="/"
+              className="block px-3 py-2 text-secondary hover:text-accent transition-colors duration-200"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Home
             </Link>
-            <Link href="/books">
-              <a 
-                className="block px-3 py-2 text-secondary hover:text-accent transition-colors duration-200"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Books
-              </a>
+            <Link 
+              href="/books"
+              className="block px-3 py-2 text-secondary hover:text-accent transition-colors duration-200"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Books
             </Link>
-            <Link href="/videos">
-              <a 
-                className="block px-3 py-2 text-secondary hover:text-accent transition-colors duration-200"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Videos
-              </a>
+            <Link 
+              href="/videos"
+              className="block px-3 py-2 text-secondary hover:text-accent transition-colors duration-200"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Videos
             </Link>
             {isAuthenticated && (
-              <Link href="/admin">
-                <a 
-                  className="block px-3 py-2 text-secondary hover:text-accent transition-colors duration-200"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Admin
-                </a>
+              <Link 
+                href="/admin"
+                className="block px-3 py-2 text-secondary hover:text-accent transition-colors duration-200"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Admin
               </Link>
             )}
             <button 
