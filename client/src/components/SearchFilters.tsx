@@ -34,7 +34,7 @@ export default function SearchFilters({ filters, onFiltersChange, type }: Search
               <SelectValue placeholder="All Categories" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Categories</SelectItem>
+              <SelectItem value="all">All Categories</SelectItem>
               <SelectItem value="Leadership">Leadership</SelectItem>
               <SelectItem value="Personal Development">Personal Development</SelectItem>
               <SelectItem value="Business Strategy">Business Strategy</SelectItem>
@@ -50,10 +50,10 @@ export default function SearchFilters({ filters, onFiltersChange, type }: Search
               <SelectValue placeholder="Price Range" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="-">All Prices</SelectItem>
+              <SelectItem value="all-all">All Prices</SelectItem>
               <SelectItem value="0-20">$0 - $20</SelectItem>
               <SelectItem value="20-40">$20 - $40</SelectItem>
-              <SelectItem value="40-">$40+</SelectItem>
+              <SelectItem value="40-999">$40+</SelectItem>
             </SelectContent>
           </Select>
         </>
@@ -65,7 +65,7 @@ export default function SearchFilters({ filters, onFiltersChange, type }: Search
             <SelectValue placeholder="All Platforms" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Platforms</SelectItem>
+            <SelectItem value="all">All Platforms</SelectItem>
             <SelectItem value="YouTube">YouTube</SelectItem>
             <SelectItem value="LinkedIn">LinkedIn</SelectItem>
             <SelectItem value="Instagram">Instagram</SelectItem>

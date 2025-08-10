@@ -19,7 +19,9 @@ export default function Videos() {
     queryFn: async () => {
       const params = new URLSearchParams();
       Object.entries(filters).forEach(([key, value]) => {
-        if (value) params.append(key, value);
+        if (value && value !== "all") {
+          params.append(key, value);
+        }
       });
       
       const response = await fetch(`/api/videos?${params}`);

@@ -22,7 +22,11 @@ export default function Books() {
     queryFn: async () => {
       const params = new URLSearchParams();
       Object.entries(filters).forEach(([key, value]) => {
-        if (value) params.append(key, value);
+        if (value && value !== "all" && value !== "all-all") {
+          if (key === 'minPrice' && value === 'all') return;
+          if (key === 'maxPrice' && value === 'all') return;
+          params.append(key, value);
+        }
       });
       
       const response = await fetch(`/api/books?${params}`);
