@@ -16,11 +16,11 @@ export default function Home() {
   });
 
   const { data: featuredBooks = [] } = useQuery<Book[]>({
-    queryKey: ["/api/books", { featured: true }],
+    queryKey: ["/api/books?featured=true"],
   });
 
   const { data: featuredVideos = [] } = useQuery<Video[]>({
-    queryKey: ["/api/videos", { featured: true }],
+    queryKey: ["/api/videos?featured=true"],
   });
 
   return (
