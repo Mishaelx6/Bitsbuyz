@@ -1,0 +1,94 @@
+creat a full stack PEN stack web aplication 1. Home Page (Landing Page) 
+- Introduce the client as a renowned **book author**, **multinational speaker**, and **thought leader**.
+- Include a **hero section** with:
+  - Profile photo
+  - Tagline or quote
+  - Short biography
+- Add sections like:
+  - “What I Do” (e.g., Speaking, Writing, Coaching)
+  - “Featured Books”
+  - “Latest Videos”
+  - “Contact Me” (or social links)
+
+### 🔹 2. Book Library Section
+- Display a list/grid of books (title, cover image, price, short description).
+- Each book should have an **"Add to Cart"** button.
+- Cart system where users can:
+  - View items
+  - Remove items
+  - Proceed to checkout
+- Checkout page should integrate **Paystack** for payments.
+- **Search and filter functionality** for books:
+  - Search by title or author
+  - Filter by category, price range, or popularity
+
+### 🔹 3. Video Library Section
+- Display videos uploaded on platforms like YouTube, Facebook, Instagram, etc.
+- Each video entry should include:
+  - Title
+  - Description
+  - Platform
+  - Thumbnail (upload or via link)
+  - Link to the video
+- Clicking a video should open the original video in a new tab.
+- **Search and filter functionality** for videos:
+  - Search by title or platform
+  - Filter by platform (YouTube, Facebook, Instagram)
+
+### 🔹 4. Admin Dashboard (Client Access)
+- Secure admin dashboard to:
+  - Add/edit/delete **books**
+  - Add/edit/delete **videos**
+  - Update **home page content** (bio, tagline, image, “what I do” section)
+- Admin login with simple authentication (JWT or session-based)
+
+### 🔹 5. Backend API (Node.js + Express)
+- MongoDB models for:
+  - Book
+  - Video
+  - HomepageContent
+  - Admin
+- Routes for:
+  - /api/books (CRUD)
+  - /api/videos (CRUD)
+  - /api/homepage (fetch/update)
+  - /api/cart (add/remove/view)
+  - /api/checkout (Paystack integration)
+  - /api/admin/login
+
+### 🔹 6. Frontend (React + Tailwind CSS)
+- Responsive design for both **mobile and desktop**
+- Pages:
+  - Home
+  - Book Library
+  - Video Library
+  - Cart & Checkout
+  - Admin Dashboard (protected)
+- Components:
+  - Navbar with links
+  - BookCard, VideoCard, CartItem, AdminForms, etc.
+  - Search bar + filter UI for books and videos
+
+### 🔹 7. Payment Integration
+- Use **Paystack** for processing payments.
+- Integrate the Paystack inline payment widget.
+- Store keys in .env securely.
+
+### 🔹 8. Deployment Notes
+- Replit Node.js server or deploy backend to **Render**, frontend to **Vercel**.
+- MongoDB Atlas for database.
+
+### Tech Stack:
+- React (Frontend)
+- Tailwind CSS (Styling)
+- Node.js + Express (Backend)
+- MongoDB (Database)
+- Paystack (Payment Gateway)
+
+### Extra:
+- Mobile-first, fully responsive design
+- Basic SEO tags
+- Optional animations (e.g., framer-motion)
+
+
+ChatGPT said:
