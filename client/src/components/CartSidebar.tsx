@@ -65,7 +65,7 @@ export default function CartSidebar() {
                     />
                     <div className="flex-1">
                       <h4 className="font-semibold text-primary mb-1">{item.book.title}</h4>
-                      <p className="text-accent font-bold">${item.book.price}</p>
+                      <p className="text-accent font-bold">₦{item.book.price}</p>
                       <p className="text-sm text-secondary">Qty: {item.quantity}</p>
                       <button 
                         className="text-red-500 text-sm hover:text-red-600 mt-2"
@@ -86,7 +86,7 @@ export default function CartSidebar() {
             <div className="border-t border-gray-200 p-6">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-lg font-semibold text-primary">Total:</span>
-                <span className="text-2xl font-bold text-accent">${total.toFixed(2)}</span>
+                <span className="text-2xl font-bold text-accent">₦{total.toFixed(2)}</span>
               </div>
               <Button 
                 className="w-full bg-accent text-white py-4 rounded-lg font-semibold hover:bg-blue-600 transition-colors duration-200 shadow-lg mb-3"

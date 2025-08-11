@@ -862,7 +862,7 @@ export default function Admin() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <Label htmlFor="bookPrice">Price ($)</Label>
+                        <Label htmlFor="bookPrice">Price (₦)</Label>
                         <Input
                           id="bookPrice"
                           type="number"

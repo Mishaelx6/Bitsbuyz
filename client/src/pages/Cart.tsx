@@ -98,7 +98,7 @@ export default function Cart() {
                       <p className="text-secondary mb-4 line-clamp-2">{item.book.description}</p>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                          <span className="text-2xl font-bold text-accent">${item.book.price}</span>
+                          <span className="text-2xl font-bold text-accent">₦{item.book.price}</span>
                           <span className="text-sm text-secondary">Quantity: {item.quantity}</span>
                         </div>
                         <Button
@@ -117,7 +117,7 @@ export default function Cart() {
 
               <div className="bg-white rounded-lg shadow-lg p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <span className="text-2xl font-bold text-primary">Total: ${total.toFixed(2)}</span>
+                  <span className="text-2xl font-bold text-primary">Total: ₦{total.toFixed(2)}</span>
                   <Button
                     variant="outline"
                     onClick={() => clearCartMutation.mutate()}

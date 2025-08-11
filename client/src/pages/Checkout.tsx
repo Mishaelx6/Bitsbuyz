@@ -101,7 +101,7 @@ export default function Checkout() {
               <div className="border-t pt-4">
                 <div className="flex justify-between items-center text-2xl font-bold text-primary">
                   <span>Total:</span>
-                  <span className="text-accent">${total.toFixed(2)}</span>
+                  <span className="text-accent">₦{total.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -139,7 +139,7 @@ export default function Checkout() {
                   disabled={checkoutMutation.isPending}
                   className="w-full bg-accent text-white py-4 rounded-lg text-lg font-semibold hover:bg-blue-600 transition-colors duration-200"
                 >
-                  {checkoutMutation.isPending ? "Processing..." : `Pay $${total.toFixed(2)}`}
+                  {checkoutMutation.isPending ? "Processing..." : `Pay ₦${total.toFixed(2)}`}
                 </Button>
 
                 <p className="text-xs text-gray-500 text-center">

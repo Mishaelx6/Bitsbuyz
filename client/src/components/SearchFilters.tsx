@@ -51,9 +51,9 @@ export default function SearchFilters({ filters, onFiltersChange, type }: Search
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all-all">All Prices</SelectItem>
-              <SelectItem value="0-20">$0 - $20</SelectItem>
-              <SelectItem value="20-40">$20 - $40</SelectItem>
-              <SelectItem value="40-999">$40+</SelectItem>
+              <SelectItem value="0-20">₦0 - ₦20</SelectItem>
+              <SelectItem value="20-40">₦20 - ₦40</SelectItem>
+              <SelectItem value="40-999">₦40+</SelectItem>
             </SelectContent>
           </Select>
         </>

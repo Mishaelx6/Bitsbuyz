@@ -43,7 +43,7 @@ export default function BookCard({ book }: BookCardProps) {
         <h3 className="text-xl font-bold text-primary mb-2">{book.title}</h3>
         <p className="text-secondary text-sm mb-4 line-clamp-3">{book.description}</p>
         <div className="flex items-center justify-between mb-4">
-          <span className="text-2xl font-bold text-accent">${book.price}</span>
+          <span className="text-2xl font-bold text-accent">₦{book.price}</span>
           {book.rating && book.reviewCount && (
             <div className="flex items-center gap-1">
               <i className="fas fa-star text-yellow-400"></i>
