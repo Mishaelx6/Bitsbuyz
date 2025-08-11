@@ -194,7 +194,7 @@ export default function Navbar() {
             <div className="text-gray-400">|</div>
             
             <Link 
-              href="/books" 
+              href="/store" 
               className="flex items-center space-x-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:text-blue-600 hover:bg-gray-50"
             >
               <span>🛍️</span>

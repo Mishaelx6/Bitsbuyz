@@ -26,6 +26,7 @@ Preferred communication style: Simple, everyday language.
 ✓ **Currency Conversion**: Changed all currency symbols from $ to ₦ (naira) throughout the platform
 ✓ **Text Simplification**: Updated all "video courses" references to just "videos" across the platform
 ✓ **Navbar Simplification**: Removed category links (Leadership, Business, Self-Help, Bestsellers) and favorites icon, replaced with single "BitsBuyz Store" link
+✓ **Store Coming Soon Page**: Created dedicated "Store Coming Soon" page with newsletter signup and feature previews
 
 ## System Architecture
 

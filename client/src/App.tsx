@@ -13,6 +13,7 @@ import Checkout from "@/pages/Checkout";
 import Admin from "@/pages/Admin";
 import AuthPage from "@/pages/auth-page";
 import NotFound from "@/pages/not-found";
+import StoreComingSoon from "@/pages/store-coming-soon";
 import { CartProvider } from "@/hooks/useCart";
 
 function Router() {
@@ -29,6 +30,7 @@ function Router() {
       <Route path="/checkout/failed" component={() => <div>Payment Failed!</div>} />
       <Route path="/admin" component={Admin} />
       <Route path="/auth" component={AuthPage} />
+      <Route path="/store" component={StoreComingSoon} />
       <Route component={NotFound} />
     </Switch>
   );
