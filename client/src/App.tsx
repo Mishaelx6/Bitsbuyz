@@ -14,6 +14,7 @@ import Admin from "@/pages/Admin";
 import AuthPage from "@/pages/auth-page";
 import NotFound from "@/pages/not-found";
 import StoreComingSoon from "@/pages/store-coming-soon";
+import TestPage from "@/pages/TestPage";
 import { CartProvider } from "@/hooks/useCart";
 
 function Router() {
@@ -21,7 +22,8 @@ function Router() {
 
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/" component={TestPage} />
+      <Route path="/home" component={Home} />
       <Route path="/books" component={Books} />
       <Route path="/videos" component={Videos} />
       <Route path="/cart" component={Cart} />
