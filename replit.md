@@ -25,6 +25,7 @@ Preferred communication style: Simple, everyday language.
 ✓ **Footer Updates**: Removed Resources section and Contact from Quick Links, changed branding to "bitsbuyz"
 ✓ **Currency Conversion**: Changed all currency symbols from $ to ₦ (naira) throughout the platform
 ✓ **Text Simplification**: Updated all "video courses" references to just "videos" across the platform
+✓ **Navbar Simplification**: Removed category links (Leadership, Business, Self-Help, Bestsellers) and favorites icon, replaced with single "BitsBuyz Store" link
 
 ## System Architecture
 

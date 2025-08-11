@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
-import { Menu, X, ShoppingCart, Search, User, BookOpen, Video, Star, Heart, Bell } from "lucide-react";
+import { Menu, X, ShoppingCart, Search, User, BookOpen, Video, Star, Bell } from "lucide-react";
 import type { SiteContent } from "@shared/schema";
 
 export default function Navbar() {
@@ -126,13 +126,7 @@ export default function Navbar() {
                 </Link>
               )}
 
-              {/* Wishlist (placeholder) */}
-              <button className="hidden md:block p-2 text-gray-600 hover:text-red-500 transition-colors relative">
-                <Heart className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                  0
-                </span>
-              </button>
+
 
               {/* Shopping cart */}
               <button 
@@ -196,21 +190,16 @@ export default function Navbar() {
               <span>Videos</span>
             </Link>
 
-            {/* Category filters */}
+            {/* Store Link */}
             <div className="text-gray-400">|</div>
             
-            <button className="text-sm text-gray-600 hover:text-blue-600 font-medium transition-colors">
-              Leadership
-            </button>
-            <button className="text-sm text-gray-600 hover:text-blue-600 font-medium transition-colors">
-              Business
-            </button>
-            <button className="text-sm text-gray-600 hover:text-blue-600 font-medium transition-colors">
-              Self-Help
-            </button>
-            <button className="text-sm text-gray-600 hover:text-blue-600 font-medium transition-colors">
-              Bestsellers
-            </button>
+            <Link 
+              href="/books" 
+              className="flex items-center space-x-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+            >
+              <span>🛍️</span>
+              <span>BitsBuyz Store</span>
+            </Link>
           </div>
         </div>
 
