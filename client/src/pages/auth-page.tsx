@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -13,13 +13,7 @@ import { useAuth } from "@/hooks/useAuth";
 export default function AuthPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { isAuthenticated } = useAuth();
-  
-  // Redirect if already authenticated
-  if (isAuthenticated) {
-    setLocation('/');
-    return null;
-  }
+  const { isAuthenticated, isLoading } = useAuth();
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: { username: string; password: string }) => {
@@ -32,10 +26,9 @@ export default function AuthPage() {
         title: "Login successful",
         description: "Welcome back!",
       });
-      // Force page reload to ensure authentication state is updated
       setTimeout(() => {
-        window.location.href = '/';
-      }, 500);
+        setLocation('/');
+      }, 1000);
     },
     onError: (error: Error) => {
       toast({
@@ -57,10 +50,9 @@ export default function AuthPage() {
         title: "Registration successful",
         description: "Account created successfully!",
       });
-      // Force page reload to ensure authentication state is updated
       setTimeout(() => {
-        window.location.href = '/';
-      }, 500);
+        setLocation('/');
+      }, 1000);
     },
     onError: (error: Error) => {
       toast({
@@ -70,6 +62,13 @@ export default function AuthPage() {
       });
     },
   });
+
+  // Redirect effect - runs after all hooks
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      setLocation('/');
+    }
+  }, [isAuthenticated, isLoading, setLocation]);
 
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -91,6 +90,29 @@ export default function AuthPage() {
       lastName: formData.get('lastName') as string,
     });
   };
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show nothing if authenticated (redirect will happen via useEffect)
+  if (isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Redirecting...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
