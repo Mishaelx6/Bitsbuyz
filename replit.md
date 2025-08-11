@@ -24,6 +24,7 @@ Preferred communication style: Simple, everyday language.
 ✓ **Navbar Cleanup**: Removed top announcement bar section for cleaner navigation
 ✓ **Footer Updates**: Removed Resources section and Contact from Quick Links, changed branding to "bitsbuyz"
 ✓ **Currency Conversion**: Changed all currency symbols from $ to ₦ (naira) throughout the platform
+✓ **Text Simplification**: Updated all "video courses" references to just "videos" across the platform
 
 ## System Architecture
 

@@ -193,7 +193,7 @@ export default function Navbar() {
               }`}
             >
               <Video className="h-4 w-4" />
-              <span>Video Courses</span>
+              <span>Videos</span>
             </Link>
 
             {/* Category filters */}
@@ -259,7 +259,7 @@ export default function Navbar() {
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <Video className="h-5 w-5" />
-                  <span className="font-medium">Video Courses</span>
+                  <span className="font-medium">Videos</span>
                 </Link>
 
                 {isAuthenticated ? (
