@@ -17,7 +17,7 @@ export default function AuthPage() {
   
   // Redirect if already authenticated
   if (isAuthenticated) {
-    setLocation('/admin');
+    setLocation('/');
     return null;
   }
 
@@ -32,7 +32,7 @@ export default function AuthPage() {
         title: "Login successful",
         description: "Welcome back!",
       });
-      setLocation('/admin');
+      setLocation('/');
     },
     onError: (error: Error) => {
       toast({
@@ -54,7 +54,7 @@ export default function AuthPage() {
         title: "Registration successful",
         description: "Account created successfully!",
       });
-      setLocation('/admin');
+      setLocation('/');
     },
     onError: (error: Error) => {
       toast({
