@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import Home from "@/pages/Home";
+import SimpleHome from "@/pages/SimpleHome";
 import Landing from "@/pages/Landing";
 import Books from "@/pages/Books";
 import Videos from "@/pages/Videos";
@@ -22,8 +23,8 @@ function Router() {
 
   return (
     <Switch>
-      <Route path="/" component={TestPage} />
-      <Route path="/home" component={Home} />
+      <Route path="/" component={SimpleHome} />
+      <Route path="/test" component={TestPage} />
       <Route path="/books" component={Books} />
       <Route path="/videos" component={Videos} />
       <Route path="/cart" component={Cart} />

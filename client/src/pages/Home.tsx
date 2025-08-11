@@ -57,7 +57,7 @@ export default function Home() {
     }, 5000); // Change every 5 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [activeBackgroundImages.length]);
 
   // Get featured items
   const displayBooks = featuredBooks.filter(book => book.featured).slice(0, 3);
