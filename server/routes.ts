@@ -12,6 +12,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth route is handled in auth.ts
 
   // Homepage content routes
+  app.put('/api/homepage', isAdmin, async (req, res) => {
+    try {
+      const validatedData = insertHomepageContentSchema.parse(req.body);
+      const content = await storage.updateHomepageContent(validatedData);
+      res.json(content);
+    } catch (error) {
+      console.error("Error updating homepage content:", error);
+      res.status(500).json({ error: "Failed to update homepage content" });
+    }
+  });
+
   app.get('/api/homepage', async (req, res) => {
     try {
       const content = await storage.getHomepageContent();
@@ -22,18 +33,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/homepage', isAuthenticated, async (req, res) => {
+
+
+  // Site content routes
+  app.put('/api/site-content', isAdmin, async (req, res) => {
     try {
-      const validatedContent = insertHomepageContentSchema.parse(req.body);
-      const content = await storage.updateHomepageContent(validatedContent);
+      const validatedData = insertSiteContentSchema.parse(req.body);
+      const content = await storage.updateSiteContent(validatedData);
       res.json(content);
     } catch (error) {
-      console.error("Error updating homepage content:", error);
-      res.status(500).json({ message: "Failed to update homepage content" });
+      console.error("Error updating site content:", error);
+      res.status(500).json({ error: "Failed to update site content" });
     }
   });
 
-  // Site content routes
   app.get('/api/site-content', async (req, res) => {
     try {
       const content = await storage.getSiteContent();
@@ -44,16 +57,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/site-content', isAuthenticated, async (req, res) => {
-    try {
-      const validatedContent = insertSiteContentSchema.parse(req.body);
-      const content = await storage.updateSiteContent(validatedContent);
-      res.json(content);
-    } catch (error) {
-      console.error("Error updating site content:", error);
-      res.status(500).json({ message: "Failed to update site content" });
-    }
-  });
+
 
   // Book routes
   app.get('/api/books', async (req, res) => {
@@ -89,7 +93,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/books', isAuthenticated, async (req, res) => {
+  app.post('/api/books', isAdmin, async (req, res) => {
     try {
       const validatedBook = insertBookSchema.parse(req.body);
       const book = await storage.createBook(validatedBook);
@@ -100,7 +104,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/books/:id', isAuthenticated, async (req, res) => {
+  app.put('/api/books/:id', isAdmin, async (req, res) => {
     try {
       const validatedBook = insertBookSchema.partial().parse(req.body);
       const book = await storage.updateBook(req.params.id, validatedBook);
@@ -111,7 +115,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/books/:id', isAuthenticated, async (req, res) => {
+  app.delete('/api/books/:id', isAdmin, async (req, res) => {
     try {
       await storage.deleteBook(req.params.id);
       res.status(204).send();
