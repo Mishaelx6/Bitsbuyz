@@ -26,7 +26,7 @@ function Router() {
       <Route path="/checkout" component={Checkout} />
       <Route path="/checkout/success" component={() => <div>Payment Successful!</div>} />
       <Route path="/checkout/failed" component={() => <div>Payment Failed!</div>} />
-      {isAuthenticated && <Route path="/admin" component={Admin} />}
+      <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
     </Switch>
   );
