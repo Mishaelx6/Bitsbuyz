@@ -85,7 +85,11 @@ export default function Admin() {
     heroSubtitle: "",
     whatIDoTitle: "",
     whatIDoDescription: "",
+    backgroundImages: [] as string[],
   });
+
+  // Background image input state
+  const [newBackgroundImage, setNewBackgroundImage] = useState("");
 
   // Site content form state
   const [siteForm, setSiteForm] = useState({
@@ -123,6 +127,7 @@ export default function Admin() {
         heroSubtitle: homepageContent.heroSubtitle || "",
         whatIDoTitle: homepageContent.whatIDoTitle || "",
         whatIDoDescription: homepageContent.whatIDoDescription || "",
+        backgroundImages: homepageContent.backgroundImages || [],
       });
     }
   }, [homepageContent]);
@@ -413,6 +418,135 @@ export default function Admin() {
                         placeholder="Bestselling author of 5 transformational leadership books..."
                         rows={4}
                       />
+                    </div>
+
+                    {/* Background Images Management */}
+                    <div className="border p-6 rounded-lg bg-orange-50">
+                      <h3 className="text-lg font-semibold mb-4 text-gray-900">Hero Background Images (African Themes)</h3>
+                      <p className="text-sm text-gray-600 mb-4">
+                        These images rotate every 5 seconds on the homepage hero section. All images should feature African people and themes.
+                      </p>
+                      
+                      {/* Current Background Images */}
+                      <div className="mb-6">
+                        <Label className="text-base font-medium">Current Background Images</Label>
+                        <div className="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {homepageForm.backgroundImages.map((imageUrl, index) => (
+                            <div key={index} className="relative group">
+                              <img
+                                src={imageUrl}
+                                alt={`Background ${index + 1}`}
+                                className="w-full h-32 object-cover rounded-lg border"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={() => {
+                                  setHomepageForm(prev => ({
+                                    ...prev,
+                                    backgroundImages: prev.backgroundImages.filter((_, i) => i !== index)
+                                  }));
+                                }}
+                              >
+                                Remove
+                              </Button>
+                              <div className="absolute bottom-2 left-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
+                                Image {index + 1}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        
+                        {homepageForm.backgroundImages.length === 0 && (
+                          <p className="text-gray-500 text-sm mt-2">No background images set. Using default African-themed images.</p>
+                        )}
+                      </div>
+
+                      {/* Add New Background Image */}
+                      <div className="mb-4">
+                        <Label htmlFor="newBackgroundImage">Add New Background Image</Label>
+                        <div className="flex gap-2 mt-2">
+                          <Input
+                            id="newBackgroundImage"
+                            value={newBackgroundImage}
+                            onChange={(e) => setNewBackgroundImage(e.target.value)}
+                            placeholder="https://images.unsplash.com/photo-... (African themes only)"
+                            className="flex-1"
+                          />
+                          <Button
+                            type="button"
+                            onClick={() => {
+                              if (newBackgroundImage.trim()) {
+                                setHomepageForm(prev => ({
+                                  ...prev,
+                                  backgroundImages: [...prev.backgroundImages, newBackgroundImage.trim()]
+                                }));
+                                setNewBackgroundImage("");
+                              }
+                            }}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            Add Image
+                          </Button>
+                        </div>
+                        
+                        {/* Preview of new image */}
+                        {newBackgroundImage && (
+                          <div className="mt-2">
+                            <img
+                              src={newBackgroundImage}
+                              alt="Preview"
+                              className="w-32 h-20 object-cover rounded border"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Suggested African-themed Images */}
+                      <div className="mb-4">
+                        <Label className="text-base font-medium">Suggested African-themed Images</Label>
+                        <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
+                          {[
+                            'https://images.unsplash.com/photo-1544717297-fa95b6ee9643?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+                            'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+                            'https://images.unsplash.com/photo-1594736797933-d0c8ba448b8d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+                            'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+                          ].map((suggestedUrl, index) => (
+                            <Button
+                              key={index}
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                if (!homepageForm.backgroundImages.includes(suggestedUrl)) {
+                                  setHomepageForm(prev => ({
+                                    ...prev,
+                                    backgroundImages: [...prev.backgroundImages, suggestedUrl]
+                                  }));
+                                }
+                              }}
+                              className="text-left justify-start h-auto p-2"
+                            >
+                              <div className="flex items-center gap-2">
+                                <img
+                                  src={suggestedUrl}
+                                  alt={`African theme ${index + 1}`}
+                                  className="w-12 h-8 object-cover rounded"
+                                />
+                                <span className="text-xs">Add African Theme {index + 1}</span>
+                              </div>
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
 
                     <Button

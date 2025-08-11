@@ -115,6 +115,7 @@ export const homepageContent = pgTable("homepage_content", {
   heroSubtitle: text("hero_subtitle").notNull(),
   whatIDoTitle: text("what_i_do_title").notNull(),
   whatIDoDescription: text("what_i_do_description").notNull(),
+  backgroundImages: text("background_images").array(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 

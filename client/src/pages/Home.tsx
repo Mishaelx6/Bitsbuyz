@@ -13,18 +13,18 @@ import { Link } from "wouter";
 import { useCart } from "@/hooks/useCart";
 import type { Book, Video as VideoType, HomepageContent } from "@shared/schema";
 
-// Background images for the hero section
+// Background images for the hero section - African themes and people
 const backgroundImages = [
-  // E-commerce and digital books theme
-  'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80', // Books on desk
-  // Online learning and videos theme  
-  'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80', // People learning online
-  // Digital commerce theme
-  'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80', // Online shopping setup
-  // Reading and education theme
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80', // Reading books
-  // Digital content creation theme
-  'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80', // Content creation setup
+  // African students learning with technology
+  'https://images.unsplash.com/photo-1544717297-fa95b6ee9643?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+  // African woman reading and studying
+  'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+  // African professionals in modern office setting
+  'https://images.unsplash.com/photo-1594736797933-d0c8ba448b8d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+  // African teacher or speaker presenting
+  'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+  // African business people in technology environment
+  'https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
 ];
 
 export default function Home() {
@@ -34,6 +34,11 @@ export default function Home() {
   const { data: homepageContent } = useQuery<HomepageContent>({
     queryKey: ["/api/homepage"],
   });
+
+  // Use database images if available, otherwise fallback to default African-themed images
+  const activeBackgroundImages = homepageContent?.backgroundImages && homepageContent.backgroundImages.length > 0 
+    ? homepageContent.backgroundImages 
+    : backgroundImages;
 
   const { data: featuredBooks = [] } = useQuery<Book[]>({
     queryKey: ["/api/books"],
@@ -47,7 +52,7 @@ export default function Home() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) => 
-        (prevIndex + 1) % backgroundImages.length
+        (prevIndex + 1) % activeBackgroundImages.length
       );
     }, 5000); // Change every 5 seconds
 
@@ -66,7 +71,7 @@ export default function Home() {
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background Images with Smooth Transition */}
         <div className="absolute inset-0">
-          {backgroundImages.map((image, index) => (
+          {activeBackgroundImages.map((image, index) => (
             <div
               key={index}
               className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 ease-in-out ${
