@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Clock, Store, Bell, Gift } from "lucide-react";
 
@@ -35,33 +34,33 @@ export default function StoreComingSoon() {
 
             {/* Features preview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-16">
-              <Card className="p-6 text-center hover:shadow-lg transition-shadow">
+              <div className="p-6 text-center bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Gift className="h-8 w-8 text-blue-600" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Exclusive Content</h3>
                 <p className="text-gray-600">Premium African-themed digital books and video content</p>
-              </Card>
+              </div>
 
-              <Card className="p-6 text-center hover:shadow-lg transition-shadow">
+              <div className="p-6 text-center bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow">
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Clock className="h-8 w-8 text-purple-600" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Instant Access</h3>
                 <p className="text-gray-600">Download and stream content immediately after purchase</p>
-              </Card>
+              </div>
 
-              <Card className="p-6 text-center hover:shadow-lg transition-shadow">
+              <div className="p-6 text-center bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Bell className="h-8 w-8 text-green-600" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Stay Updated</h3>
                 <p className="text-gray-600">Be the first to know when we launch</p>
-              </Card>
+              </div>
             </div>
 
             {/* Newsletter signup */}
-            <Card className="p-8 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+            <div className="p-8 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg shadow-lg">
               <div className="max-w-md mx-auto">
                 <h3 className="text-2xl font-bold mb-4">Get Notified When We Launch</h3>
                 <p className="mb-6 text-blue-100">
@@ -83,7 +82,7 @@ export default function StoreComingSoon() {
                   We'll only send you updates about our launch. No spam, promise!
                 </p>
               </div>
-            </Card>
+            </div>
 
             {/* Back to homepage */}
             <div className="mt-12">
