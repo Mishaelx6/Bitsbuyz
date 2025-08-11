@@ -348,6 +348,9 @@ export default function Admin() {
               <Card>
                 <CardHeader>
                   <CardTitle>Add New Book</CardTitle>
+                  <p className="text-sm text-gray-600">
+                    Add books to your collection. Featured books will appear on the homepage.
+                  </p>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={(e) => {
@@ -422,7 +425,19 @@ export default function Admin() {
                         id="bookPdf"
                         value={bookForm.pdfUrl}
                         onChange={(e) => setBookForm(prev => ({ ...prev, pdfUrl: e.target.value }))}
+                        placeholder="https://example.com/book.pdf"
                       />
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="bookFeatured"
+                        checked={bookForm.featured}
+                        onChange={(e) => setBookForm(prev => ({ ...prev, featured: e.target.checked }))}
+                        className="rounded"
+                      />
+                      <Label htmlFor="bookFeatured">Feature this book on the homepage</Label>
                     </div>
 
                     <Button
@@ -473,7 +488,10 @@ export default function Admin() {
               {/* Add Video Form */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Add New Video</CardTitle>
+                  <CardTitle>Add New YouTube Video</CardTitle>
+                  <p className="text-sm text-gray-600">
+                    Simply paste a YouTube URL and the system will automatically extract the thumbnail and set the platform.
+                  </p>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={(e) => {
@@ -516,25 +534,59 @@ export default function Admin() {
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <Label htmlFor="videoUrl">Video URL</Label>
-                        <Input
-                          id="videoUrl"
-                          value={videoForm.videoUrl}
-                          onChange={(e) => setVideoForm(prev => ({ ...prev, videoUrl: e.target.value }))}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="thumbnailUrl">Thumbnail URL</Label>
-                        <Input
-                          id="thumbnailUrl"
-                          value={videoForm.thumbnailUrl}
-                          onChange={(e) => setVideoForm(prev => ({ ...prev, thumbnailUrl: e.target.value }))}
-                          required
-                        />
-                      </div>
+                    <div>
+                      <Label htmlFor="videoUrl">YouTube Video URL</Label>
+                      <Input
+                        id="videoUrl"
+                        value={videoForm.videoUrl}
+                        onChange={(e) => {
+                          const url = e.target.value;
+                          setVideoForm(prev => ({ ...prev, videoUrl: url }));
+                          
+                          // Auto-extract YouTube video ID and generate thumbnail
+                          if (url.includes('youtube.com/watch?v=') || url.includes('youtu.be/')) {
+                            const videoId = url.includes('youtube.com/watch?v=') 
+                              ? url.split('v=')[1]?.split('&')[0]
+                              : url.split('youtu.be/')[1]?.split('?')[0];
+                            
+                            if (videoId) {
+                              setVideoForm(prev => ({ 
+                                ...prev, 
+                                platform: 'YouTube',
+                                thumbnailUrl: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
+                              }));
+                            }
+                          }
+                        }}
+                        placeholder="https://www.youtube.com/watch?v=..."
+                        required
+                      />
+                      <p className="text-sm text-gray-500 mt-1">
+                        Enter a YouTube URL and the thumbnail will be generated automatically
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="thumbnailUrl">Thumbnail URL</Label>
+                      <Input
+                        id="thumbnailUrl"
+                        value={videoForm.thumbnailUrl}
+                        onChange={(e) => setVideoForm(prev => ({ ...prev, thumbnailUrl: e.target.value }))}
+                        placeholder="Auto-generated from YouTube URL or enter custom URL"
+                        required
+                      />
+                      {videoForm.thumbnailUrl && (
+                        <div className="mt-2">
+                          <img 
+                            src={videoForm.thumbnailUrl} 
+                            alt="Thumbnail preview" 
+                            className="w-32 h-18 object-cover rounded border"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        </div>
+                      )}
                     </div>
 
                     <div>
@@ -543,7 +595,19 @@ export default function Admin() {
                         id="videoDuration"
                         value={videoForm.duration}
                         onChange={(e) => setVideoForm(prev => ({ ...prev, duration: e.target.value }))}
+                        placeholder="Optional: 24:15"
                       />
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="videoFeatured"
+                        checked={videoForm.featured}
+                        onChange={(e) => setVideoForm(prev => ({ ...prev, featured: e.target.checked }))}
+                        className="rounded"
+                      />
+                      <Label htmlFor="videoFeatured">Feature this video on the homepage</Label>
                     </div>
 
                     <Button
