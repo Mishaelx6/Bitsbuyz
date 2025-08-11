@@ -32,7 +32,10 @@ export default function AuthPage() {
         title: "Login successful",
         description: "Welcome back!",
       });
-      setLocation('/');
+      // Force page reload to ensure authentication state is updated
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 500);
     },
     onError: (error: Error) => {
       toast({
@@ -54,7 +57,10 @@ export default function AuthPage() {
         title: "Registration successful",
         description: "Account created successfully!",
       });
-      setLocation('/');
+      // Force page reload to ensure authentication state is updated
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 500);
     },
     onError: (error: Error) => {
       toast({
