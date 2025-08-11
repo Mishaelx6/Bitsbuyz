@@ -71,6 +71,7 @@ export const siteContent = pgTable("site_content", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   // Site branding
   siteName: varchar("site_name").notNull().default("Dr. Sarah Johnson"),
+  logoText: varchar("logo_text", { length: 100 }).notNull().default("bitsbuyz"),
   // Navigation
   navHome: varchar("nav_home").notNull().default("Home"),
   navBooks: varchar("nav_books").notNull().default("Books"),

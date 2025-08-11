@@ -3,6 +3,8 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
+import type { SiteContent } from "@shared/schema";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -10,13 +12,21 @@ export default function Navbar() {
   const { isAuthenticated } = useAuth();
   const [location] = useLocation();
 
+  const { data: siteContent } = useQuery<SiteContent>({
+    queryKey: ["/api/site-content"],
+  });
+
   return (
     <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-sm border-b border-gray-100 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
             <Link href="/">
-              <h1 className="text-xl font-bold text-primary cursor-pointer">Dr. Sarah Johnson</h1>
+              <div className="flex items-center space-x-2 cursor-pointer">
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-3 py-1 rounded-lg font-bold text-lg tracking-wide">
+                  {siteContent?.logoText || "bitsbuyz"}
+                </div>
+              </div>
             </Link>
           </div>
           
