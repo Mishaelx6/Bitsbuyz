@@ -47,20 +47,27 @@ export default function Navbar() {
                   <Link href="/admin" className={`text-secondary hover:text-accent transition-colors duration-200 font-medium ${location === '/admin' ? 'text-accent' : ''}`}>
                     Admin
                   </Link>
-                  <a 
-                    href="/api/logout"
+                  <button
+                    onClick={async () => {
+                      try {
+                        await fetch('/api/logout', { method: 'POST' });
+                        window.location.reload();
+                      } catch (error) {
+                        console.error('Logout failed:', error);
+                      }
+                    }}
                     className="text-secondary hover:text-accent transition-colors duration-200 font-medium"
                   >
                     Logout
-                  </a>
+                  </button>
                 </>
               ) : (
-                <a 
-                  href="/api/login"
+                <Link 
+                  href="/auth"
                   className="bg-accent text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-200 font-medium"
                 >
                   Login
-                </a>
+                </Link>
               )}
               <button 
                 className="relative p-2 text-secondary hover:text-accent transition-colors duration-200"
@@ -122,22 +129,29 @@ export default function Navbar() {
                 >
                   Admin
                 </Link>
-                <a 
-                  href="/api/logout"
-                  className="block px-3 py-2 text-secondary hover:text-accent transition-colors duration-200"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                <button
+                  onClick={async () => {
+                    try {
+                      await fetch('/api/logout', { method: 'POST' });
+                      setIsMobileMenuOpen(false);
+                      window.location.reload();
+                    } catch (error) {
+                      console.error('Logout failed:', error);
+                    }
+                  }}
+                  className="block px-3 py-2 text-secondary hover:text-accent transition-colors duration-200 w-full text-left"
                 >
                   Logout
-                </a>
+                </button>
               </>
             ) : (
-              <a 
-                href="/api/login"
+              <Link 
+                href="/auth"
                 className="block px-3 py-2 bg-accent text-white rounded-lg text-center mx-3"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Login
-              </a>
+              </Link>
             )}
             <button 
               className="w-full text-left px-3 py-2 text-secondary hover:text-accent transition-colors duration-200"
