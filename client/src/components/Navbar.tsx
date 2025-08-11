@@ -42,10 +42,25 @@ export default function Navbar() {
               <Link href="/videos" className={`text-secondary hover:text-accent transition-colors duration-200 font-medium ${location === '/videos' ? 'text-accent' : ''}`}>
                 Videos
               </Link>
-              {isAuthenticated && (
-                <Link href="/admin" className={`text-secondary hover:text-accent transition-colors duration-200 font-medium ${location === '/admin' ? 'text-accent' : ''}`}>
-                  Admin
-                </Link>
+              {isAuthenticated ? (
+                <>
+                  <Link href="/admin" className={`text-secondary hover:text-accent transition-colors duration-200 font-medium ${location === '/admin' ? 'text-accent' : ''}`}>
+                    Admin
+                  </Link>
+                  <a 
+                    href="/api/logout"
+                    className="text-secondary hover:text-accent transition-colors duration-200 font-medium"
+                  >
+                    Logout
+                  </a>
+                </>
+              ) : (
+                <a 
+                  href="/api/login"
+                  className="bg-accent text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-200 font-medium"
+                >
+                  Login
+                </a>
               )}
               <button 
                 className="relative p-2 text-secondary hover:text-accent transition-colors duration-200"
@@ -98,14 +113,31 @@ export default function Navbar() {
             >
               Videos
             </Link>
-            {isAuthenticated && (
-              <Link 
-                href="/admin"
-                className="block px-3 py-2 text-secondary hover:text-accent transition-colors duration-200"
+            {isAuthenticated ? (
+              <>
+                <Link 
+                  href="/admin"
+                  className="block px-3 py-2 text-secondary hover:text-accent transition-colors duration-200"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Admin
+                </Link>
+                <a 
+                  href="/api/logout"
+                  className="block px-3 py-2 text-secondary hover:text-accent transition-colors duration-200"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Logout
+                </a>
+              </>
+            ) : (
+              <a 
+                href="/api/login"
+                className="block px-3 py-2 bg-accent text-white rounded-lg text-center mx-3"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Admin
-              </Link>
+                Login
+              </a>
             )}
             <button 
               className="w-full text-left px-3 py-2 text-secondary hover:text-accent transition-colors duration-200"
