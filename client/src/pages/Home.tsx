@@ -278,7 +278,7 @@ export default function Home() {
       </section>
 
       <Footer />
-      <CartSidebar isOpen={isCartOpen} onClose={toggleCart} />
+      <CartSidebar />
     </div>
   );
 }
