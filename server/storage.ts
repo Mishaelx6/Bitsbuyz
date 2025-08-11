@@ -3,6 +3,7 @@ import {
   books,
   videos,
   homepageContent,
+  siteContent,
   cart,
   orders,
   type User,
@@ -13,6 +14,8 @@ import {
   type InsertVideo,
   type HomepageContent,
   type InsertHomepageContent,
+  type SiteContent,
+  type InsertSiteContent,
   type Cart,
   type InsertCart,
   type Order,
@@ -43,6 +46,10 @@ export interface IStorage {
   // Homepage content operations
   getHomepageContent(): Promise<HomepageContent | undefined>;
   updateHomepageContent(content: InsertHomepageContent): Promise<HomepageContent>;
+
+  // Site content operations
+  getSiteContent(): Promise<SiteContent | undefined>;
+  updateSiteContent(content: InsertSiteContent): Promise<SiteContent>;
 
   // Cart operations
   getCartItems(sessionId: string): Promise<Cart[]>;
@@ -238,6 +245,28 @@ export class DatabaseStorage implements IStorage {
       return updated;
     } else {
       const [created] = await db.insert(homepageContent).values(content).returning();
+      return created;
+    }
+  }
+
+  // Site content operations
+  async getSiteContent(): Promise<SiteContent | undefined> {
+    const [content] = await db.select().from(siteContent).limit(1);
+    return content;
+  }
+
+  async updateSiteContent(content: InsertSiteContent): Promise<SiteContent> {
+    const existing = await this.getSiteContent();
+    
+    if (existing) {
+      const [updated] = await db
+        .update(siteContent)
+        .set({ ...content, updatedAt: new Date() })
+        .where(eq(siteContent.id, existing.id))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db.insert(siteContent).values(content).returning();
       return created;
     }
   }

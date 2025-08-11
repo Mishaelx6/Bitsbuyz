@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { apiRequest } from "@/lib/queryClient";
-import type { Book, Video, HomepageContent } from "@shared/schema";
+import type { Book, Video, HomepageContent, SiteContent } from "@shared/schema";
 
 export default function Admin() {
   const { toast } = useToast();
@@ -49,6 +49,11 @@ export default function Admin() {
     enabled: isAuthenticated,
   });
 
+  const { data: siteContent } = useQuery<SiteContent>({
+    queryKey: ["/api/site-content"],
+    enabled: isAuthenticated,
+  });
+
   // Book form state
   const [bookForm, setBookForm] = useState({
     title: "",
@@ -82,6 +87,31 @@ export default function Admin() {
     whatIDoDescription: "",
   });
 
+  // Site content form state
+  const [siteForm, setSiteForm] = useState({
+    siteName: "",
+    navHome: "",
+    navBooks: "",
+    navVideos: "",
+    navAdmin: "",
+    booksPageTitle: "",
+    booksPageSubtitle: "",
+    videosPageTitle: "",
+    videosPageSubtitle: "",
+    footerDescription: "",
+    footerCopyright: "",
+    footerLinks: "",
+    contactTitle: "",
+    contactSubtitle: "",
+    contactButtonText: "",
+    whatIDoTitle: "",
+    whatIDoSubtitle: "",
+    linkedinUrl: "",
+    twitterUrl: "",
+    youtubeUrl: "",
+    instagramUrl: "",
+  });
+
   // Update homepage form when data loads
   useEffect(() => {
     if (homepageContent) {
@@ -96,6 +126,35 @@ export default function Admin() {
       });
     }
   }, [homepageContent]);
+
+  // Update site form when data loads
+  useEffect(() => {
+    if (siteContent) {
+      setSiteForm({
+        siteName: siteContent.siteName || "",
+        navHome: siteContent.navHome || "",
+        navBooks: siteContent.navBooks || "",
+        navVideos: siteContent.navVideos || "",
+        navAdmin: siteContent.navAdmin || "",
+        booksPageTitle: siteContent.booksPageTitle || "",
+        booksPageSubtitle: siteContent.booksPageSubtitle || "",
+        videosPageTitle: siteContent.videosPageTitle || "",
+        videosPageSubtitle: siteContent.videosPageSubtitle || "",
+        footerDescription: siteContent.footerDescription || "",
+        footerCopyright: siteContent.footerCopyright || "",
+        footerLinks: siteContent.footerLinks || "",
+        contactTitle: siteContent.contactTitle || "",
+        contactSubtitle: siteContent.contactSubtitle || "",
+        contactButtonText: siteContent.contactButtonText || "",
+        whatIDoTitle: siteContent.whatIDoTitle || "",
+        whatIDoSubtitle: siteContent.whatIDoSubtitle || "",
+        linkedinUrl: siteContent.linkedinUrl || "",
+        twitterUrl: siteContent.twitterUrl || "",
+        youtubeUrl: siteContent.youtubeUrl || "",
+        instagramUrl: siteContent.instagramUrl || "",
+      });
+    }
+  }, [siteContent]);
 
   // Book mutations
   const createBookMutation = useMutation({
@@ -238,6 +297,31 @@ export default function Admin() {
     },
   });
 
+  // Site content mutation
+  const updateSiteContentMutation = useMutation({
+    mutationFn: async (content: any) => {
+      await apiRequest("PUT", "/api/site-content", content);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/site-content"] });
+      toast({ title: "Success", description: "Site content updated successfully" });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({ title: "Error", description: "Failed to update site content", variant: "destructive" });
+    },
+  });
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -270,8 +354,9 @@ export default function Admin() {
           </div>
 
           <Tabs defaultValue="homepage" className="space-y-8">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="homepage">Homepage</TabsTrigger>
+              <TabsTrigger value="site-content">Site Content</TabsTrigger>
               <TabsTrigger value="books">Books</TabsTrigger>
               <TabsTrigger value="videos">Videos</TabsTrigger>
               <TabsTrigger value="stats">Statistics</TabsTrigger>
@@ -336,6 +421,251 @@ export default function Admin() {
                       className="bg-accent text-white hover:bg-blue-600"
                     >
                       {updateHomepageMutation.isPending ? "Updating..." : "Update Homepage"}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Site Content Tab */}
+            <TabsContent value="site-content">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Site Content Management</CardTitle>
+                  <p className="text-sm text-gray-600">
+                    Edit all text content across your website, including navigation, page titles, and social links.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={(e) => {
+                    e.preventDefault();
+                    updateSiteContentMutation.mutate(siteForm);
+                  }} className="space-y-8">
+                    
+                    {/* Navigation Section */}
+                    <div className="border p-6 rounded-lg bg-gray-50">
+                      <h3 className="text-lg font-semibold mb-4 text-gray-900">Navigation</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div>
+                          <Label htmlFor="siteName">Site Name</Label>
+                          <Input
+                            id="siteName"
+                            value={siteForm.siteName}
+                            onChange={(e) => setSiteForm(prev => ({ ...prev, siteName: e.target.value }))}
+                            placeholder="Dr. Sarah Johnson"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="navHome">Home Link Text</Label>
+                          <Input
+                            id="navHome"
+                            value={siteForm.navHome}
+                            onChange={(e) => setSiteForm(prev => ({ ...prev, navHome: e.target.value }))}
+                            placeholder="Home"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="navBooks">Books Link Text</Label>
+                          <Input
+                            id="navBooks"
+                            value={siteForm.navBooks}
+                            onChange={(e) => setSiteForm(prev => ({ ...prev, navBooks: e.target.value }))}
+                            placeholder="Books"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="navVideos">Videos Link Text</Label>
+                          <Input
+                            id="navVideos"
+                            value={siteForm.navVideos}
+                            onChange={(e) => setSiteForm(prev => ({ ...prev, navVideos: e.target.value }))}
+                            placeholder="Videos"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="navAdmin">Admin Link Text</Label>
+                          <Input
+                            id="navAdmin"
+                            value={siteForm.navAdmin}
+                            onChange={(e) => setSiteForm(prev => ({ ...prev, navAdmin: e.target.value }))}
+                            placeholder="Admin"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Page Titles Section */}
+                    <div className="border p-6 rounded-lg bg-blue-50">
+                      <h3 className="text-lg font-semibold mb-4 text-gray-900">Page Titles & Subtitles</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <Label htmlFor="booksPageTitle">Books Page Title</Label>
+                          <Input
+                            id="booksPageTitle"
+                            value={siteForm.booksPageTitle}
+                            onChange={(e) => setSiteForm(prev => ({ ...prev, booksPageTitle: e.target.value }))}
+                            placeholder="Leadership Library"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="booksPageSubtitle">Books Page Subtitle</Label>
+                          <Input
+                            id="booksPageSubtitle"
+                            value={siteForm.booksPageSubtitle}
+                            onChange={(e) => setSiteForm(prev => ({ ...prev, booksPageSubtitle: e.target.value }))}
+                            placeholder="Transformative insights for modern leaders"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="videosPageTitle">Videos Page Title</Label>
+                          <Input
+                            id="videosPageTitle"
+                            value={siteForm.videosPageTitle}
+                            onChange={(e) => setSiteForm(prev => ({ ...prev, videosPageTitle: e.target.value }))}
+                            placeholder="Video Collection"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="videosPageSubtitle">Videos Page Subtitle</Label>
+                          <Input
+                            id="videosPageSubtitle"
+                            value={siteForm.videosPageSubtitle}
+                            onChange={(e) => setSiteForm(prev => ({ ...prev, videosPageSubtitle: e.target.value }))}
+                            placeholder="Inspiring talks and insights"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Contact & What I Do Section */}
+                    <div className="border p-6 rounded-lg bg-green-50">
+                      <h3 className="text-lg font-semibold mb-4 text-gray-900">Contact & What I Do</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <Label htmlFor="contactTitle">Contact Section Title</Label>
+                          <Input
+                            id="contactTitle"
+                            value={siteForm.contactTitle}
+                            onChange={(e) => setSiteForm(prev => ({ ...prev, contactTitle: e.target.value }))}
+                            placeholder="Get In Touch"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="contactSubtitle">Contact Section Subtitle</Label>
+                          <Input
+                            id="contactSubtitle"
+                            value={siteForm.contactSubtitle}
+                            onChange={(e) => setSiteForm(prev => ({ ...prev, contactSubtitle: e.target.value }))}
+                            placeholder="Ready to transform your leadership journey?"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="contactButtonText">Contact Button Text</Label>
+                          <Input
+                            id="contactButtonText"
+                            value={siteForm.contactButtonText}
+                            onChange={(e) => setSiteForm(prev => ({ ...prev, contactButtonText: e.target.value }))}
+                            placeholder="Schedule a Consultation"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="whatIDoSubtitle">What I Do Section Subtitle</Label>
+                          <Input
+                            id="whatIDoSubtitle"
+                            value={siteForm.whatIDoSubtitle}
+                            onChange={(e) => setSiteForm(prev => ({ ...prev, whatIDoSubtitle: e.target.value }))}
+                            placeholder="Empowering leaders through research-based insights"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Social Media Links */}
+                    <div className="border p-6 rounded-lg bg-purple-50">
+                      <h3 className="text-lg font-semibold mb-4 text-gray-900">Social Media Links</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <Label htmlFor="linkedinUrl">LinkedIn URL</Label>
+                          <Input
+                            id="linkedinUrl"
+                            value={siteForm.linkedinUrl}
+                            onChange={(e) => setSiteForm(prev => ({ ...prev, linkedinUrl: e.target.value }))}
+                            placeholder="https://linkedin.com/in/..."
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="twitterUrl">Twitter/X URL</Label>
+                          <Input
+                            id="twitterUrl"
+                            value={siteForm.twitterUrl}
+                            onChange={(e) => setSiteForm(prev => ({ ...prev, twitterUrl: e.target.value }))}
+                            placeholder="https://twitter.com/..."
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="youtubeUrl">YouTube URL</Label>
+                          <Input
+                            id="youtubeUrl"
+                            value={siteForm.youtubeUrl}
+                            onChange={(e) => setSiteForm(prev => ({ ...prev, youtubeUrl: e.target.value }))}
+                            placeholder="https://youtube.com/@..."
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="instagramUrl">Instagram URL</Label>
+                          <Input
+                            id="instagramUrl"
+                            value={siteForm.instagramUrl}
+                            onChange={(e) => setSiteForm(prev => ({ ...prev, instagramUrl: e.target.value }))}
+                            placeholder="https://instagram.com/..."
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Footer Section */}
+                    <div className="border p-6 rounded-lg bg-orange-50">
+                      <h3 className="text-lg font-semibold mb-4 text-gray-900">Footer Content</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="footerDescription">Footer Description</Label>
+                          <Textarea
+                            id="footerDescription"
+                            value={siteForm.footerDescription}
+                            onChange={(e) => setSiteForm(prev => ({ ...prev, footerDescription: e.target.value }))}
+                            placeholder="Empowering leaders worldwide through transformative insights and proven strategies."
+                            rows={3}
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="footerCopyright">Copyright Text</Label>
+                            <Input
+                              id="footerCopyright"
+                              value={siteForm.footerCopyright}
+                              onChange={(e) => setSiteForm(prev => ({ ...prev, footerCopyright: e.target.value }))}
+                              placeholder="© 2025 Dr. Sarah Johnson. All rights reserved."
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="footerLinks">Footer Links (JSON format)</Label>
+                            <Input
+                              id="footerLinks"
+                              value={siteForm.footerLinks}
+                              onChange={(e) => setSiteForm(prev => ({ ...prev, footerLinks: e.target.value }))}
+                              placeholder='[{"text": "Privacy Policy", "url": "/privacy"}]'
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      disabled={updateSiteContentMutation.isPending}
+                      className="bg-accent text-white hover:bg-blue-600 w-full md:w-auto"
+                    >
+                      {updateSiteContentMutation.isPending ? "Updating..." : "Update Site Content"}
                     </Button>
                   </form>
                 </CardContent>

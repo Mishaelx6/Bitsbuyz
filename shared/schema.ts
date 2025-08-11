@@ -66,6 +66,41 @@ export const videos = pgTable("videos", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Site content management table
+export const siteContent = pgTable("site_content", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  // Site branding
+  siteName: varchar("site_name").notNull().default("Dr. Sarah Johnson"),
+  // Navigation
+  navHome: varchar("nav_home").notNull().default("Home"),
+  navBooks: varchar("nav_books").notNull().default("Books"),
+  navVideos: varchar("nav_videos").notNull().default("Videos"),
+  navAdmin: varchar("nav_admin").notNull().default("Admin"),
+  // Page headings
+  booksPageTitle: varchar("books_page_title").notNull().default("Book Library"),
+  booksPageSubtitle: text("books_page_subtitle").notNull().default("Explore our complete collection of leadership and personal development books."),
+  videosPageTitle: varchar("videos_page_title").notNull().default("Video Library"),
+  videosPageSubtitle: text("videos_page_subtitle").notNull().default("Watch keynotes, interviews, and thought leadership discussions from platforms worldwide."),
+  // Footer content
+  footerDescription: text("footer_description").notNull().default("Transforming leadership through authentic storytelling. Author, speaker, and executive coach helping leaders unlock their full potential."),
+  footerCopyright: varchar("footer_copyright").notNull().default("© 2024 Dr. Sarah Johnson. All rights reserved."),
+  footerLinks: varchar("footer_links").notNull().default("Privacy Policy | Terms of Service"),
+  // Contact section
+  contactTitle: varchar("contact_title").notNull().default("Ready to Transform Your Leadership?"),
+  contactSubtitle: text("contact_subtitle").notNull().default("Let's start a conversation about your leadership journey and how we can work together to unlock your full potential."),
+  contactButtonText: varchar("contact_button_text").notNull().default("Send Message"),
+  // What I Do section
+  whatIDoTitle: varchar("what_i_do_title").notNull().default("What I Do"),
+  whatIDoSubtitle: text("what_i_do_subtitle").notNull().default("I help leaders and organizations unlock their full potential through three core pillars of transformation."),
+  // Social links
+  linkedinUrl: varchar("linkedin_url").default("#"),
+  twitterUrl: varchar("twitter_url").default("#"),
+  youtubeUrl: varchar("youtube_url").default("#"),
+  instagramUrl: varchar("instagram_url").default("#"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Homepage content table
 export const homepageContent = pgTable("homepage_content", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -110,6 +145,9 @@ export type Book = typeof books.$inferSelect;
 export type InsertVideo = typeof videos.$inferInsert;
 export type Video = typeof videos.$inferSelect;
 
+export type InsertSiteContent = typeof siteContent.$inferInsert;
+export type SiteContent = typeof siteContent.$inferSelect;
+
 export type InsertHomepageContent = typeof homepageContent.$inferInsert;
 export type HomepageContent = typeof homepageContent.$inferSelect;
 
@@ -127,6 +165,12 @@ export const insertBookSchema = createInsertSchema(books).omit({
 });
 
 export const insertVideoSchema = createInsertSchema(videos).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertSiteContentSchema = createInsertSchema(siteContent).omit({
   id: true,
   createdAt: true,
   updatedAt: true,

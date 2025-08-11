@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { insertBookSchema, insertVideoSchema, insertHomepageContentSchema, insertCartSchema } from "@shared/schema";
+import { insertBookSchema, insertVideoSchema, insertHomepageContentSchema, insertSiteContentSchema, insertCartSchema } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -40,6 +40,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating homepage content:", error);
       res.status(500).json({ message: "Failed to update homepage content" });
+    }
+  });
+
+  // Site content routes
+  app.get('/api/site-content', async (req, res) => {
+    try {
+      const content = await storage.getSiteContent();
+      res.json(content);
+    } catch (error) {
+      console.error("Error fetching site content:", error);
+      res.status(500).json({ message: "Failed to fetch site content" });
+    }
+  });
+
+  app.put('/api/site-content', isAuthenticated, async (req, res) => {
+    try {
+      const validatedContent = insertSiteContentSchema.parse(req.body);
+      const content = await storage.updateSiteContent(validatedContent);
+      res.json(content);
+    } catch (error) {
+      console.error("Error updating site content:", error);
+      res.status(500).json({ message: "Failed to update site content" });
     }
   });
 
