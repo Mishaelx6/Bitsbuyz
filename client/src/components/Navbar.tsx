@@ -30,13 +30,6 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Top announcement bar */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-2 text-sm">
-        <div className="container mx-auto px-4">
-          🎉 Free shipping on digital downloads • 24/7 instant access • 30-day money-back guarantee
-        </div>
-      </div>
-
       {/* Main navigation */}
       <nav className="sticky top-0 bg-white shadow-lg border-b border-gray-200 z-50">
         <div className="container mx-auto px-4">
