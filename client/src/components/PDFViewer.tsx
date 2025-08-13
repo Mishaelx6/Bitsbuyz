@@ -32,14 +32,20 @@ export default function PDFViewer({ book, onClose }: PDFViewerProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // Get the correct PDF URL - convert Google Drive URLs to embed format for iframe
+  // Get the correct PDF URL - multiple fallback options
   const getPDFUrl = (pdfUrl: string) => {
     try {
-      // Convert Google Drive URLs to embed format for iframe display
       if (pdfUrl.includes('drive.google.com')) {
-        const fileId = pdfUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+        const fileId = pdfUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1] || pdfUrl.match(/id=([a-zA-Z0-9-_]+)/)?.[1];
         if (fileId) {
-          return `https://drive.google.com/file/d/${fileId}/preview`;
+          // Try different formats based on the current attempt
+          if (pdfError) {
+            // Fallback: Direct download attempt
+            return `https://drive.google.com/uc?export=download&id=${fileId}`;
+          } else {
+            // Primary: Google Drive's embedded viewer
+            return `https://drive.google.com/file/d/${fileId}/preview`;
+          }
         }
       }
       return pdfUrl;
@@ -211,24 +217,55 @@ export default function PDFViewer({ book, onClose }: PDFViewerProps) {
           {book.pdfUrl ? (
             <div className="w-full h-full flex items-center justify-center overflow-auto">
               {canViewPage(currentPage) ? (
-                <div className="flex flex-col items-center">
-                  <iframe
-                    src={book.pdfUrl ? getPDFUrl(book.pdfUrl) : ''}
-                    width="100%"
-                    height="100%"
-                    style={{ minHeight: '500px' }}
-                    title={`${book.title} PDF`}
-                    onLoad={() => {
-                      console.log('PDF iframe loaded successfully');
-                      setNumPages(100); // Set a default page count
-                      setPdfError(null);
-                    }}
-                    onError={() => {
-                      console.error('PDF iframe failed to load');
-                      setPdfError('Failed to load PDF. Please check the URL.');
-                    }}
-                    data-testid="pdf-iframe"
-                  />
+                <div className="flex flex-col items-center w-full">
+                  {!pdfError ? (
+                    <iframe
+                      src={book.pdfUrl ? getPDFUrl(book.pdfUrl) : ''}
+                      width="100%"
+                      height="100%"
+                      style={{ minHeight: '500px', border: 'none' }}
+                      title={`${book.title} PDF`}
+                      onLoad={() => {
+                        console.log('PDF iframe loaded successfully');
+                        console.log('PDF URL:', book.pdfUrl ? getPDFUrl(book.pdfUrl) : 'No URL');
+                        setNumPages(100);
+                        setPdfError(null);
+                      }}
+                      allow="autoplay"
+                      data-testid="pdf-iframe"
+                    />
+                  ) : (
+                    <div className="text-center p-8 bg-red-50 border border-red-200 rounded w-full">
+                      <p className="text-red-600 mb-2">{pdfError}</p>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Please ensure the Google Drive file is shared with "Anyone with the link can view"
+                      </p>
+                      <div className="flex gap-2 mb-4">
+                        <Button 
+                          onClick={() => {
+                            setPdfError(null);
+                          }}
+                          variant="outline"
+                          size="sm"
+                        >
+                          Try Different Format
+                        </Button>
+                        <Button 
+                          onClick={() => {
+                            window.open(book.pdfUrl || '', '_blank');
+                          }}
+                          variant="outline"
+                          size="sm"
+                        >
+                          Open in New Tab
+                        </Button>
+                      </div>
+                      <div className="mt-4 p-3 bg-gray-100 rounded text-xs text-gray-600">
+                        <p className="font-semibold mb-1">Expected URL format:</p>
+                        <p className="break-all">{book.pdfUrl ? getPDFUrl(book.pdfUrl) : 'No URL'}</p>
+                      </div>
+                    </div>
+                  )}
                   
                   {/* Zoom Controls */}
                   <div className="flex items-center gap-2 mt-4">
