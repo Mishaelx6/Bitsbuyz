@@ -39,6 +39,11 @@ export default function BookCard({ book, onReadBook }: BookCardProps) {
         src={book.coverImageUrl}
         alt={`${book.title} book cover`}
         className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+        onError={(e) => {
+          console.error('Image load error for book:', book.title);
+          console.error('Image URL:', book.coverImageUrl);
+          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x600/f3f4f6/9ca3af?text=Cover+Not+Available';
+        }}
       />
       <div className="p-6">
         <h3 className="text-xl font-bold text-primary mb-2">{book.title}</h3>

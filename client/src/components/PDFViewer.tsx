@@ -175,6 +175,13 @@ export default function PDFViewer({ book, onClose }: PDFViewerProps) {
     }
   }, []);
 
+  // Add debugging for when component renders
+  useEffect(() => {
+    console.log('PDFViewer rendered with book:', book.title);
+    console.log('Book PDF URL:', book.pdfUrl);
+    console.log('Converted PDF URL:', book.pdfUrl ? getPDFUrl(book.pdfUrl) : 'No PDF URL');
+  }, [book]);
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" data-testid="pdf-viewer-modal">
       <div className="bg-white rounded-lg max-w-4xl w-full max-h-screen overflow-hidden">
@@ -202,14 +209,16 @@ export default function PDFViewer({ book, onClose }: PDFViewerProps) {
               {canViewPage(currentPage) ? (
                 <div className="flex flex-col items-center">
                   <Document
-                    file={getPDFUrl(book.pdfUrl)}
+                    file={book.pdfUrl ? getPDFUrl(book.pdfUrl) : undefined}
                     onLoadSuccess={({ numPages }) => {
+                      console.log('PDF loaded successfully:', numPages, 'pages');
                       setNumPages(numPages);
                       setPdfError(null);
                     }}
                     onLoadError={(error) => {
                       console.error('PDF load error:', error);
                       console.error('PDF URL:', book.pdfUrl ? getPDFUrl(book.pdfUrl) : 'No PDF URL');
+                      console.error('Book data:', book);
                       setPdfError(`Failed to load PDF: ${error.message}. Please check the URL.`);
                     }}
                     loading={
