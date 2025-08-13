@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -8,8 +10,8 @@ import { useAuth } from "@/hooks/useAuth";
 import type { Book, BookPurchase } from "@shared/schema";
 import { ChevronLeft, ChevronRight, BookOpen, Lock, ZoomIn, ZoomOut } from "lucide-react";
 
-// Configure PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+// Configure PDF.js worker - use compatible version that works in browser
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 interface PDFViewerProps {
   book: Book;
@@ -35,14 +37,19 @@ export default function PDFViewer({ book, onClose }: PDFViewerProps) {
 
   // Get the correct PDF URL - convert Google Drive URLs to direct download format
   const getPDFUrl = (pdfUrl: string) => {
-    // Convert Google Drive URLs to direct download format for PDF.js
-    if (pdfUrl.includes('drive.google.com')) {
-      const fileId = pdfUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
-      if (fileId) {
-        return `https://drive.google.com/uc?export=download&id=${fileId}`;
+    try {
+      // Convert Google Drive URLs to direct download format for PDF.js
+      if (pdfUrl.includes('drive.google.com')) {
+        const fileId = pdfUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+        if (fileId) {
+          return `https://drive.google.com/uc?export=download&id=${fileId}`;
+        }
       }
+      return pdfUrl;
+    } catch (error) {
+      console.error('Error processing PDF URL:', error);
+      return pdfUrl;
     }
-    return pdfUrl;
   };
 
   // Get user's reading progress (always enabled now since endpoint works for unauthenticated users)
