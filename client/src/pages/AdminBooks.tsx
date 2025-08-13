@@ -161,7 +161,7 @@ export default function AdminBooks() {
     
     const bookData = {
       ...formData,
-      price: parseFloat(formData.price),
+      price: formData.price, // Keep as string for decimal validation
       pageCount: parseInt(formData.pageCount) || 0,
       coverImageUrl: convertToDirectGoogleDriveUrl(formData.coverImageUrl, 'image'),
       pdfUrl: convertToDirectGoogleDriveUrl(formData.pdfUrl, 'pdf'),
