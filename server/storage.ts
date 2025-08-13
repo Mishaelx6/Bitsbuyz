@@ -26,7 +26,7 @@ import {
   type InsertBookPurchase,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, like, gte, lte, desc, asc } from "drizzle-orm";
+import { eq, and, like, gte, lte, desc, asc, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
@@ -114,44 +114,51 @@ export class DatabaseStorage implements IStorage {
 
   // Book operations
   async getBooks(filters: BookFilters = {}): Promise<Book[]> {
-    let query = db.select().from(books);
-    const conditions = [];
+    try {
+      
+      let query = db.select().from(books);
+      const conditions = [];
 
-    if (filters.search) {
-      conditions.push(like(books.title, `%${filters.search}%`));
-    }
-    if (filters.category) {
-      conditions.push(eq(books.category, filters.category));
-    }
-    if (filters.minPrice !== undefined) {
-      conditions.push(gte(books.price, filters.minPrice.toString()));
-    }
-    if (filters.maxPrice !== undefined) {
-      conditions.push(lte(books.price, filters.maxPrice.toString()));
-    }
-    if (filters.featured !== undefined) {
-      conditions.push(eq(books.featured, filters.featured));
-    }
+      if (filters.search) {
+        conditions.push(like(books.title, `%${filters.search}%`));
+      }
+      if (filters.category) {
+        conditions.push(eq(books.category, filters.category));
+      }
+      if (filters.minPrice !== undefined) {
+        conditions.push(gte(books.price, filters.minPrice.toString()));
+      }
+      if (filters.maxPrice !== undefined) {
+        conditions.push(lte(books.price, filters.maxPrice.toString()));
+      }
+      if (filters.featured !== undefined) {
+        conditions.push(eq(books.featured, filters.featured));
+      }
 
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-    }
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
 
-    // Apply sorting
-    const sortBy = filters.sortBy || 'createdAt';
-    const sortOrder = filters.sortOrder || 'desc';
-    
-    if (sortBy === 'title') {
-      query = query.orderBy(sortOrder === 'asc' ? asc(books.title) : desc(books.title));
-    } else if (sortBy === 'price') {
-      query = query.orderBy(sortOrder === 'asc' ? asc(books.price) : desc(books.price));
-    } else if (sortBy === 'rating') {
-      query = query.orderBy(sortOrder === 'asc' ? asc(books.rating) : desc(books.rating));
-    } else {
-      query = query.orderBy(sortOrder === 'asc' ? asc(books.createdAt) : desc(books.createdAt));
-    }
+      // Apply sorting
+      const sortBy = filters.sortBy || 'createdAt';
+      const sortOrder = filters.sortOrder || 'desc';
+      
+      if (sortBy === 'title') {
+        query = query.orderBy(sortOrder === 'asc' ? asc(books.title) : desc(books.title));
+      } else if (sortBy === 'price') {
+        query = query.orderBy(sortOrder === 'asc' ? asc(books.price) : desc(books.price));
+      } else if (sortBy === 'rating') {
+        query = query.orderBy(sortOrder === 'asc' ? asc(books.rating) : desc(books.rating));
+      } else {
+        query = query.orderBy(sortOrder === 'asc' ? asc(books.createdAt) : desc(books.createdAt));
+      }
 
-    return await query;
+      return await query;
+      
+    } catch (error) {
+      console.error("Error in getBooks:", error);
+      throw error;
+    }
   }
 
   async getBook(id: string): Promise<Book | undefined> {

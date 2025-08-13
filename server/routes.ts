@@ -68,7 +68,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         category: req.query.category as string,
         minPrice: req.query.minPrice ? parseFloat(req.query.minPrice as string) : undefined,
         maxPrice: req.query.maxPrice ? parseFloat(req.query.maxPrice as string) : undefined,
-        featured: req.query.featured === 'true',
+        featured: req.query.featured === 'true' ? true : undefined, // Only filter if explicitly true
         sortBy: req.query.sortBy as any,
         sortOrder: req.query.sortOrder as any,
       };
@@ -96,20 +96,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/books', isAdmin, async (req, res) => {
     try {
-      console.log("Raw request body:", req.body);
-      console.log("Price type:", typeof req.body.price);
-      console.log("Price value:", req.body.price);
-      
       // Ensure price is always a string
       const bookData = {
         ...req.body,
         price: req.body.price?.toString() || "0"
       };
       
-      console.log("Modified book data:", bookData);
-      console.log("Modified price type:", typeof bookData.price);
+      // Convert Google Drive URLs to direct access format
+      const modifiedBookData = {
+        ...bookData,
+        coverImageUrl: convertGoogleDriveUrl(bookData.coverImageUrl, 'image'),
+        pdfUrl: convertGoogleDriveUrl(bookData.pdfUrl, 'pdf')
+      };
       
-      const validatedBook = insertBookSchema.parse(bookData);
+      const validatedBook = insertBookSchema.parse(modifiedBookData);
       const book = await storage.createBook(validatedBook);
       res.status(201).json(book);
     } catch (error) {
