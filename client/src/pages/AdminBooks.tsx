@@ -6,8 +6,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { FileUploader } from "@/components/FileUploader";
 import type { Book } from "@shared/schema";
-import { Upload, Edit, Trash2, Plus } from "lucide-react";
+import type { UploadResult } from "@uppy/core";
+import { Upload, Edit, Trash2, Plus, FileText, Image } from "lucide-react";
 
 export default function AdminBooks() {
   const [isAdding, setIsAdding] = useState(false);
@@ -21,6 +23,11 @@ export default function AdminBooks() {
     category: "",
     pageCount: "",
     featured: false,
+  });
+
+  const [uploading, setUploading] = useState({
+    pdf: false,
+    cover: false,
   });
 
   const { toast } = useToast();
@@ -105,6 +112,51 @@ export default function AdminBooks() {
     });
     setIsAdding(false);
     setEditingBook(null);
+    setUploading({ pdf: false, cover: false });
+  };
+
+  // Handle PDF upload
+  const handlePDFUpload = async () => {
+    const response = await apiRequest("POST", "/api/upload/pdf");
+    const data = await response.json();
+    return {
+      method: "PUT" as const,
+      url: data.uploadURL,
+    };
+  };
+
+  const handlePDFUploadComplete = (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+    if (result.successful && result.successful.length > 0) {
+      const uploadURL = result.successful[0].uploadURL as string;
+      setFormData(prev => ({ ...prev, pdfUrl: uploadURL }));
+      toast({
+        title: "PDF Uploaded",
+        description: "PDF file has been successfully uploaded.",
+      });
+    }
+    setUploading(prev => ({ ...prev, pdf: false }));
+  };
+
+  // Handle Cover Image upload
+  const handleCoverUpload = async () => {
+    const response = await apiRequest("POST", "/api/upload/cover");
+    const data = await response.json();
+    return {
+      method: "PUT" as const,
+      url: data.uploadURL,
+    };
+  };
+
+  const handleCoverUploadComplete = (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+    if (result.successful && result.successful.length > 0) {
+      const uploadURL = result.successful[0].uploadURL as string;
+      setFormData(prev => ({ ...prev, coverImageUrl: uploadURL }));
+      toast({
+        title: "Cover Image Uploaded",
+        description: "Cover image has been successfully uploaded.",
+      });
+    }
+    setUploading(prev => ({ ...prev, cover: false }));
   };
 
   const handleEdit = (book: Book) => {
@@ -129,6 +181,8 @@ export default function AdminBooks() {
       ...formData,
       price: parseFloat(formData.price),
       pageCount: parseInt(formData.pageCount) || 0,
+      coverImageUrl: formData.coverImageUrl,
+      pdfUrl: formData.pdfUrl,
     };
 
     if (editingBook) {
@@ -219,29 +273,54 @@ export default function AdminBooks() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Cover Image URL *
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Cover Image *
               </label>
-              <Input
-                type="url"
-                value={formData.coverImageUrl}
-                onChange={(e) => setFormData({ ...formData, coverImageUrl: e.target.value })}
-                required
-                data-testid="book-cover-input"
-              />
+              <div className="space-y-2">
+                <FileUploader
+                  maxNumberOfFiles={1}
+                  maxFileSize={5242880} // 5MB
+                  allowedFileTypes={['.jpg', '.jpeg', '.png', '.webp']}
+                  onGetUploadParameters={handleCoverUpload}
+                  onComplete={handleCoverUploadComplete}
+                  buttonClassName="w-full bg-green-600 hover:bg-green-700"
+                >
+                  <Image className="h-4 w-4 mr-2" />
+                  Upload Cover Image
+                </FileUploader>
+                {formData.coverImageUrl && (
+                  <div className="mt-2">
+                    <img 
+                      src={formData.coverImageUrl} 
+                      alt="Cover preview" 
+                      className="h-24 w-16 object-cover rounded border"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Cover image uploaded</p>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                PDF URL
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                PDF File
               </label>
-              <Input
-                type="url"
-                value={formData.pdfUrl}
-                onChange={(e) => setFormData({ ...formData, pdfUrl: e.target.value })}
-                placeholder="Upload PDF file URL"
-                data-testid="book-pdf-input"
-              />
+              <div className="space-y-2">
+                <FileUploader
+                  maxNumberOfFiles={1}
+                  maxFileSize={52428800} // 50MB
+                  allowedFileTypes={['.pdf']}
+                  onGetUploadParameters={handlePDFUpload}
+                  onComplete={handlePDFUploadComplete}
+                  buttonClassName="w-full bg-blue-600 hover:bg-blue-700"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Upload PDF File
+                </FileUploader>
+                {formData.pdfUrl && (
+                  <p className="text-xs text-green-600">✓ PDF file uploaded</p>
+                )}
+              </div>
             </div>
 
             <div className="md:col-span-2">

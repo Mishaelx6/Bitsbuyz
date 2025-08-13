@@ -26,6 +26,18 @@ export default function PDFViewer({ book, onClose }: PDFViewerProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
+  // Get the correct PDF URL for our storage system
+  const getPDFUrl = (pdfUrl: string) => {
+    if (pdfUrl.startsWith('https://storage.googleapis.com/')) {
+      // Extract file ID from storage URL and serve through our protected endpoint
+      const url = new URL(pdfUrl);
+      const pathParts = url.pathname.split('/');
+      const fileId = pathParts[pathParts.length - 1];
+      return `/pdfs/${fileId}`;
+    }
+    return pdfUrl;
+  };
+
   // Get user's reading progress
   const { data: bookPurchase } = useQuery<BookPurchase>({
     queryKey: ["/api/book-purchase", book.id],
@@ -99,13 +111,13 @@ export default function PDFViewer({ book, onClose }: PDFViewerProps) {
       // Initialize payment with Paystack
       const handler = window.PaystackPop.setup({
         key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
-        email: user.email || user.username,
+        email: (user as any).email || (user as any).username,
         amount: parseFloat(book.price) * 100, // Convert to kobo
         currency: 'NGN',
         ref: `book_${book.id}_${Date.now()}`,
         metadata: {
           bookId: book.id,
-          userId: user.id,
+          userId: (user as any).id,
           bookTitle: book.title,
         },
         callback: async function(response: any) {
@@ -183,7 +195,7 @@ export default function PDFViewer({ book, onClose }: PDFViewerProps) {
             <div className="w-full h-full flex items-center justify-center">
               {canViewPage(currentPage) ? (
                 <iframe
-                  src={`${book.pdfUrl}#page=${currentPage}`}
+                  src={`${getPDFUrl(book.pdfUrl)}#page=${currentPage}`}
                   className="w-full h-full border-0"
                   title={`${book.title} - Page ${currentPage}`}
                   data-testid="pdf-iframe"

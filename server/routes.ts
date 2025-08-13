@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated, isAdmin } from "./auth";
 import { insertBookSchema, insertVideoSchema, insertHomepageContentSchema, insertSiteContentSchema, insertCartSchema, insertBookPurchaseSchema } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -354,6 +355,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching order:", error);
       res.status(500).json({ message: "Failed to fetch order" });
+    }
+  });
+
+  // File upload routes
+  app.post("/api/upload/pdf", isAdmin, async (req, res) => {
+    try {
+      const objectStorageService = new ObjectStorageService();
+      const uploadURL = await objectStorageService.getPDFUploadURL();
+      res.json({ uploadURL });
+    } catch (error) {
+      console.error("Error getting PDF upload URL:", error);
+      res.status(500).json({ error: "Failed to get upload URL" });
+    }
+  });
+
+  app.post("/api/upload/cover", isAdmin, async (req, res) => {
+    try {
+      const objectStorageService = new ObjectStorageService();
+      const uploadURL = await objectStorageService.getCoverImageUploadURL();
+      res.json({ uploadURL });
+    } catch (error) {
+      console.error("Error getting cover upload URL:", error);
+      res.status(500).json({ error: "Failed to get upload URL" });
+    }
+  });
+
+  // Serve public cover images
+  app.get("/public-objects/:filePath(*)", async (req, res) => {
+    const filePath = req.params.filePath;
+    const objectStorageService = new ObjectStorageService();
+    try {
+      const file = await objectStorageService.searchPublicObject(filePath);
+      if (!file) {
+        return res.status(404).json({ error: "File not found" });
+      }
+      objectStorageService.downloadObject(file, res);
+    } catch (error) {
+      console.error("Error searching for public object:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Serve PDF files (protected)
+  app.get("/pdfs/:fileId", isAuthenticated, async (req, res) => {
+    try {
+      const { fileId } = req.params;
+      const userId = (req as any).user.id;
+      const objectStorageService = new ObjectStorageService();
+      
+      // Get the PDF file
+      const pdfFile = await objectStorageService.getPDFFile(`/pdfs/${fileId}`);
+      
+      // For now, allow all authenticated users to access PDFs
+      // Later we can add purchase verification here
+      objectStorageService.downloadObject(pdfFile, res);
+    } catch (error) {
+      console.error("Error serving PDF:", error);
+      if (error instanceof ObjectNotFoundError) {
+        return res.sendStatus(404);
+      }
+      return res.sendStatus(500);
     }
   });
 
