@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
+// Temporarily using iframe approach to avoid PDF.js compatibility issues
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -10,8 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import type { Book, BookPurchase } from "@shared/schema";
 import { ChevronLeft, ChevronRight, BookOpen, Lock, ZoomIn, ZoomOut } from "lucide-react";
 
-// Configure PDF.js worker - use compatible version that works in browser
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+// Using iframe to display PDFs - simpler and more compatible approach
 
 interface PDFViewerProps {
   book: Book;
@@ -35,14 +32,14 @@ export default function PDFViewer({ book, onClose }: PDFViewerProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // Get the correct PDF URL - convert Google Drive URLs to direct download format
+  // Get the correct PDF URL - convert Google Drive URLs to embed format for iframe
   const getPDFUrl = (pdfUrl: string) => {
     try {
-      // Convert Google Drive URLs to direct download format for PDF.js
+      // Convert Google Drive URLs to embed format for iframe display
       if (pdfUrl.includes('drive.google.com')) {
         const fileId = pdfUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
         if (fileId) {
-          return `https://drive.google.com/uc?export=download&id=${fileId}`;
+          return `https://drive.google.com/file/d/${fileId}/preview`;
         }
       }
       return pdfUrl;
@@ -215,50 +212,23 @@ export default function PDFViewer({ book, onClose }: PDFViewerProps) {
             <div className="w-full h-full flex items-center justify-center overflow-auto">
               {canViewPage(currentPage) ? (
                 <div className="flex flex-col items-center">
-                  <Document
-                    file={book.pdfUrl ? getPDFUrl(book.pdfUrl) : undefined}
-                    onLoadSuccess={({ numPages }) => {
-                      console.log('PDF loaded successfully:', numPages, 'pages');
-                      setNumPages(numPages);
+                  <iframe
+                    src={book.pdfUrl ? getPDFUrl(book.pdfUrl) : ''}
+                    width="100%"
+                    height="100%"
+                    style={{ minHeight: '500px' }}
+                    title={`${book.title} PDF`}
+                    onLoad={() => {
+                      console.log('PDF iframe loaded successfully');
+                      setNumPages(100); // Set a default page count
                       setPdfError(null);
                     }}
-                    onLoadError={(error) => {
-                      console.error('PDF load error:', error);
-                      console.error('PDF URL:', book.pdfUrl ? getPDFUrl(book.pdfUrl) : 'No PDF URL');
-                      console.error('Book data:', book);
-                      setPdfError(`Failed to load PDF: ${error.message}. Please check the URL.`);
+                    onError={() => {
+                      console.error('PDF iframe failed to load');
+                      setPdfError('Failed to load PDF. Please check the URL.');
                     }}
-                    loading={
-                      <div className="flex items-center justify-center p-8">
-                        <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full"></div>
-                        <span className="ml-3 text-gray-600">Loading PDF...</span>
-                      </div>
-                    }
-                    error={
-                      <div className="text-center p-8">
-                        <p className="text-red-600">{pdfError || 'Failed to load PDF'}</p>
-                        <p className="text-sm text-gray-500 mt-2">Please check the Google Drive URL and ensure the file is publicly accessible</p>
-                        <p className="text-xs text-gray-400 mt-1">URL: {book.pdfUrl ? getPDFUrl(book.pdfUrl) : 'No PDF URL'}</p>
-                      </div>
-                    }
-                    data-testid="pdf-document"
-                  >
-                    <Page
-                      pageNumber={currentPage}
-                      scale={scale}
-                      loading={
-                        <div className="flex items-center justify-center p-4">
-                          <div className="animate-pulse bg-gray-200 h-96 w-72 rounded"></div>
-                        </div>
-                      }
-                      error={
-                        <div className="text-center p-4">
-                          <p className="text-red-600">Failed to load page {currentPage}</p>
-                        </div>
-                      }
-                      data-testid={`pdf-page-${currentPage}`}
-                    />
-                  </Document>
+                    data-testid="pdf-iframe"
+                  />
                   
                   {/* Zoom Controls */}
                   <div className="flex items-center gap-2 mt-4">
