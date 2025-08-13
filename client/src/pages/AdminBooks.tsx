@@ -117,7 +117,7 @@ export default function AdminBooks() {
 
   // Handle PDF upload
   const handlePDFUpload = async () => {
-    const response = await apiRequest("POST", "/api/upload/pdf");
+    const response = await apiRequest("POST", "/api/objects/upload");
     const data = await response.json();
     return {
       method: "PUT" as const,
@@ -139,7 +139,7 @@ export default function AdminBooks() {
 
   // Handle Cover Image upload
   const handleCoverUpload = async () => {
-    const response = await apiRequest("POST", "/api/upload/cover");
+    const response = await apiRequest("POST", "/api/objects/upload");
     const data = await response.json();
     return {
       method: "PUT" as const,

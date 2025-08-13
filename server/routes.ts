@@ -358,25 +358,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // File upload routes
-  app.post("/api/upload/pdf", isAdmin, async (req, res) => {
+  // Object storage upload endpoint for PDFs and cover images
+  app.post("/api/objects/upload", isAdmin, async (req, res) => {
     try {
       const objectStorageService = new ObjectStorageService();
-      const uploadURL = await objectStorageService.getPDFUploadURL();
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
       res.json({ uploadURL });
     } catch (error) {
-      console.error("Error getting PDF upload URL:", error);
-      res.status(500).json({ error: "Failed to get upload URL" });
-    }
-  });
-
-  app.post("/api/upload/cover", isAdmin, async (req, res) => {
-    try {
-      const objectStorageService = new ObjectStorageService();
-      const uploadURL = await objectStorageService.getCoverImageUploadURL();
-      res.json({ uploadURL });
-    } catch (error) {
-      console.error("Error getting cover upload URL:", error);
+      console.error("Error getting upload URL:", error);
       res.status(500).json({ error: "Failed to get upload URL" });
     }
   });
