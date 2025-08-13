@@ -146,7 +146,7 @@ export default function AdminBooks() {
     setFormData({
       title: book.title,
       description: book.description,
-      price: book.price,
+      price: book.price.toString(), // Ensure price is always string
       coverImageUrl: book.coverImageUrl,
       pdfUrl: book.pdfUrl || "",
       category: book.category,
@@ -233,10 +233,11 @@ export default function AdminBooks() {
                 Price (₦) *
               </label>
               <Input
-                type="number"
-                step="0.01"
+                type="text"
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                placeholder="29.99"
+                pattern="[0-9]+(\.[0-9]{1,2})?"
                 required
                 data-testid="book-price-input"
               />

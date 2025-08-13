@@ -185,6 +185,8 @@ export const insertBookSchema = createInsertSchema(books).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  price: z.string().regex(/^\d+(\.\d{1,2})?$/, "Price must be a valid decimal number"),
 });
 
 export const insertVideoSchema = createInsertSchema(videos).omit({
