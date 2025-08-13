@@ -96,7 +96,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/books', isAdmin, async (req, res) => {
     try {
-      const validatedBook = insertBookSchema.parse(req.body);
+      console.log("Raw request body:", req.body);
+      console.log("Price type:", typeof req.body.price);
+      console.log("Price value:", req.body.price);
+      
+      // Ensure price is always a string
+      const bookData = {
+        ...req.body,
+        price: req.body.price?.toString() || "0"
+      };
+      
+      console.log("Modified book data:", bookData);
+      console.log("Modified price type:", typeof bookData.price);
+      
+      const validatedBook = insertBookSchema.parse(bookData);
       const book = await storage.createBook(validatedBook);
       res.status(201).json(book);
     } catch (error) {

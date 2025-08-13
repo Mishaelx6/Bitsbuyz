@@ -15,11 +15,11 @@ export default function AdminBooks() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    price: "",
+    price: "0.00", // Initialize with string
     coverImageUrl: "",
     pdfUrl: "",
     category: "",
-    pageCount: "",
+    pageCount: "0", // Initialize with string
     featured: false,
   });
 
@@ -98,11 +98,11 @@ export default function AdminBooks() {
     setFormData({
       title: "",
       description: "",
-      price: "",
+      price: "0.00", // Reset with string
       coverImageUrl: "",
       pdfUrl: "",
       category: "",
-      pageCount: "",
+      pageCount: "0", // Reset with string
       featured: false,
     });
     setIsAdding(false);
@@ -161,11 +161,15 @@ export default function AdminBooks() {
     
     const bookData = {
       ...formData,
-      price: formData.price, // Keep as string for decimal validation
+      price: String(formData.price), // Explicitly convert to string
       pageCount: parseInt(formData.pageCount) || 0,
       coverImageUrl: convertToDirectGoogleDriveUrl(formData.coverImageUrl, 'image'),
       pdfUrl: convertToDirectGoogleDriveUrl(formData.pdfUrl, 'pdf'),
     };
+
+    console.log("Frontend bookData:", bookData);
+    console.log("Price type:", typeof bookData.price);
+    console.log("Price value:", bookData.price);
 
     if (editingBook) {
       updateBookMutation.mutate({ id: editingBook.id, ...bookData });
