@@ -33,17 +33,21 @@ export default function PDFViewer({ book, onClose }: PDFViewerProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // Get the correct PDF URL - now directly from Google Drive
+  // Get the correct PDF URL - convert Google Drive URLs to direct download format
   const getPDFUrl = (pdfUrl: string) => {
-    // Google Drive URLs should already be converted to preview format
-    // e.g., https://drive.google.com/file/d/FILE_ID/preview
+    // Convert Google Drive URLs to direct download format for PDF.js
+    if (pdfUrl.includes('drive.google.com')) {
+      const fileId = pdfUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+      if (fileId) {
+        return `https://drive.google.com/uc?export=download&id=${fileId}`;
+      }
+    }
     return pdfUrl;
   };
 
-  // Get user's reading progress
+  // Get user's reading progress (always enabled now since endpoint works for unauthenticated users)
   const { data: bookPurchase } = useQuery<BookPurchase>({
     queryKey: ["/api/book-purchase", book.id],
-    enabled: !!user,
   });
 
   // Update reading progress
@@ -205,7 +209,8 @@ export default function PDFViewer({ book, onClose }: PDFViewerProps) {
                     }}
                     onLoadError={(error) => {
                       console.error('PDF load error:', error);
-                      setPdfError('Failed to load PDF. Please check the URL.');
+                      console.error('PDF URL:', book.pdfUrl ? getPDFUrl(book.pdfUrl) : 'No PDF URL');
+                      setPdfError(`Failed to load PDF: ${error.message}. Please check the URL.`);
                     }}
                     loading={
                       <div className="flex items-center justify-center p-8">
@@ -217,6 +222,7 @@ export default function PDFViewer({ book, onClose }: PDFViewerProps) {
                       <div className="text-center p-8">
                         <p className="text-red-600">{pdfError || 'Failed to load PDF'}</p>
                         <p className="text-sm text-gray-500 mt-2">Please check the Google Drive URL and ensure the file is publicly accessible</p>
+                        <p className="text-xs text-gray-400 mt-1">URL: {book.pdfUrl ? getPDFUrl(book.pdfUrl) : 'No PDF URL'}</p>
                       </div>
                     }
                     data-testid="pdf-document"
