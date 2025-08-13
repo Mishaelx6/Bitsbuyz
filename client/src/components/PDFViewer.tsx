@@ -33,9 +33,10 @@ export default function PDFViewer({ book, onClose }: PDFViewerProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // Get the correct PDF URL - now directly from Cloudinary
+  // Get the correct PDF URL - now directly from Google Drive
   const getPDFUrl = (pdfUrl: string) => {
-    // Return Cloudinary URL directly for PDF.js to handle
+    // Google Drive URLs should already be converted to preview format
+    // e.g., https://drive.google.com/file/d/FILE_ID/preview
     return pdfUrl;
   };
 
@@ -215,7 +216,7 @@ export default function PDFViewer({ book, onClose }: PDFViewerProps) {
                     error={
                       <div className="text-center p-8">
                         <p className="text-red-600">{pdfError || 'Failed to load PDF'}</p>
-                        <p className="text-sm text-gray-500 mt-2">Please check the Cloudinary URL</p>
+                        <p className="text-sm text-gray-500 mt-2">Please check the Google Drive URL and ensure the file is publicly accessible</p>
                       </div>
                     }
                     data-testid="pdf-document"

@@ -109,17 +109,36 @@ export default function AdminBooks() {
     setEditingBook(null);
   };
 
-  // Helper functions for URL validation
-  const isValidCloudinaryURL = (url: string) => {
-    return url.includes('cloudinary.com') || url.includes('res.cloudinary.com');
+  // Helper functions for Google Drive URL validation and conversion
+  const isValidGoogleDriveURL = (url: string) => {
+    if (!url) return false;
+    return url.includes('drive.google.com') || url.includes('docs.google.com');
   };
 
   const validatePDFURL = (url: string) => {
-    return isValidCloudinaryURL(url) && (url.includes('.pdf') || url.includes('/image/upload/'));
+    return isValidGoogleDriveURL(url);
   };
 
   const validateImageURL = (url: string) => {
-    return isValidCloudinaryURL(url) && (url.includes('.jpg') || url.includes('.jpeg') || url.includes('.png') || url.includes('/image/upload/'));
+    return isValidGoogleDriveURL(url);
+  };
+
+  // Convert Google Drive sharing URL to direct access URL
+  const convertToDirectGoogleDriveUrl = (url: string, type: 'image' | 'pdf') => {
+    if (!url) return url;
+    
+    const fileIdMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if (!fileIdMatch) return url;
+    
+    const fileId = fileIdMatch[1];
+    
+    if (type === 'pdf') {
+      // For PDFs, use the preview URL that works with PDF.js
+      return `https://drive.google.com/file/d/${fileId}/preview`;
+    } else {
+      // For images, use direct download URL  
+      return `https://drive.google.com/uc?export=download&id=${fileId}`;
+    }
   };
 
   const handleEdit = (book: Book) => {
@@ -144,8 +163,8 @@ export default function AdminBooks() {
       ...formData,
       price: parseFloat(formData.price),
       pageCount: parseInt(formData.pageCount) || 0,
-      coverImageUrl: formData.coverImageUrl,
-      pdfUrl: formData.pdfUrl,
+      coverImageUrl: convertToDirectGoogleDriveUrl(formData.coverImageUrl, 'image'),
+      pdfUrl: convertToDirectGoogleDriveUrl(formData.pdfUrl, 'pdf'),
     };
 
     if (editingBook) {
@@ -237,60 +256,60 @@ export default function AdminBooks() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Cover Image URL (Cloudinary) *
+                Cover Image URL (Google Drive) *
               </label>
               <div className="space-y-2">
                 <Input
                   value={formData.coverImageUrl}
                   onChange={(e) => setFormData({ ...formData, coverImageUrl: e.target.value })}
-                  placeholder="https://res.cloudinary.com/your-cloud/image/upload/..."
+                  placeholder="https://drive.google.com/file/d/your-file-id/view?usp=sharing"
                   required
                   data-testid="book-cover-url-input"
                 />
                 <div className="flex items-center gap-2">
                   <ExternalLink className="h-4 w-4 text-gray-400" />
                   <span className="text-xs text-gray-500">
-                    Upload your image to Cloudinary and paste the public URL here
+                    Upload your image to Google Drive, make it publicly accessible, and paste the sharing link here
                   </span>
                 </div>
                 {formData.coverImageUrl && validateImageURL(formData.coverImageUrl) && (
                   <div className="mt-2">
                     <img 
-                      src={formData.coverImageUrl} 
+                      src={convertToDirectGoogleDriveUrl(formData.coverImageUrl, 'image')} 
                       alt="Cover preview" 
                       className="h-24 w-16 object-cover rounded border"
                     />
-                    <p className="text-xs text-green-600 mt-1">✓ Valid cover image URL</p>
+                    <p className="text-xs text-green-600 mt-1">✓ Valid Google Drive image URL</p>
                   </div>
                 )}
                 {formData.coverImageUrl && !validateImageURL(formData.coverImageUrl) && (
-                  <p className="text-xs text-red-600">⚠ Please provide a valid Cloudinary image URL</p>
+                  <p className="text-xs text-red-600">⚠ Please provide a valid Google Drive URL</p>
                 )}
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                PDF File URL (Cloudinary)
+                PDF File URL (Google Drive)
               </label>
               <div className="space-y-2">
                 <Input
                   value={formData.pdfUrl}
                   onChange={(e) => setFormData({ ...formData, pdfUrl: e.target.value })}
-                  placeholder="https://res.cloudinary.com/your-cloud/raw/upload/..."
+                  placeholder="https://drive.google.com/file/d/your-file-id/view?usp=sharing"
                   data-testid="book-pdf-url-input"
                 />
                 <div className="flex items-center gap-2">
                   <ExternalLink className="h-4 w-4 text-gray-400" />
                   <span className="text-xs text-gray-500">
-                    Upload your PDF to Cloudinary and paste the public URL here
+                    Upload your PDF to Google Drive, make it publicly accessible, and paste the sharing link here
                   </span>
                 </div>
                 {formData.pdfUrl && validatePDFURL(formData.pdfUrl) && (
-                  <p className="text-xs text-green-600">✓ Valid PDF URL provided</p>
+                  <p className="text-xs text-green-600">✓ Valid Google Drive PDF URL provided</p>
                 )}
                 {formData.pdfUrl && !validatePDFURL(formData.pdfUrl) && (
-                  <p className="text-xs text-red-600">⚠ Please provide a valid Cloudinary PDF URL</p>
+                  <p className="text-xs text-red-600">⚠ Please provide a valid Google Drive URL</p>
                 )}
               </div>
             </div>
