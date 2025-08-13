@@ -3,9 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BookCard from "@/components/BookCard";
+import PDFViewer from "@/components/PDFViewer";
 import SearchFilters from "@/components/SearchFilters";
 import CartSidebar from "@/components/CartSidebar";
 import type { Book } from "@shared/schema";
+import { Button } from "@/components/ui/button";
+import { BookOpen } from "lucide-react";
 
 export default function Books() {
   const [filters, setFilters] = useState({
@@ -16,6 +19,7 @@ export default function Books() {
     sortBy: "createdAt",
     sortOrder: "desc",
   });
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
 
   const { data: books = [], isLoading } = useQuery<Book[]>({
     queryKey: ["/api/books", filters],
@@ -71,7 +75,11 @@ export default function Books() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {books.map((book) => (
-                <BookCard key={book.id} book={book} />
+                <BookCard 
+                  key={book.id} 
+                  book={book} 
+                  onReadBook={setSelectedBook}
+                />
               ))}
             </div>
           )}
@@ -88,6 +96,14 @@ export default function Books() {
 
       <Footer />
       <CartSidebar />
+      
+      {/* PDF Viewer Modal */}
+      {selectedBook && (
+        <PDFViewer 
+          book={selectedBook} 
+          onClose={() => setSelectedBook(null)} 
+        />
+      )}
     </div>
   );
 }

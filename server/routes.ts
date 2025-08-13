@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated, isAdmin } from "./auth";
-import { insertBookSchema, insertVideoSchema, insertHomepageContentSchema, insertSiteContentSchema, insertCartSchema } from "@shared/schema";
+import { insertBookSchema, insertVideoSchema, insertHomepageContentSchema, insertSiteContentSchema, insertCartSchema, insertBookPurchaseSchema } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -354,6 +354,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching order:", error);
       res.status(500).json({ message: "Failed to fetch order" });
+    }
+  });
+
+  // Book purchase routes
+  app.get('/api/book-purchase/:bookId', isAuthenticated, async (req, res) => {
+    try {
+      const { bookId } = req.params;
+      const userId = (req as any).user.id;
+      const purchase = await storage.getBookPurchase(userId, bookId);
+      res.json(purchase || null);
+    } catch (error) {
+      console.error("Error fetching book purchase:", error);
+      res.status(500).json({ error: "Failed to fetch book purchase" });
+    }
+  });
+
+  app.put('/api/book-purchase/progress', isAuthenticated, async (req, res) => {
+    try {
+      const { bookId, currentPage } = req.body;
+      const userId = (req as any).user.id;
+      const purchase = await storage.updateReadingProgress(userId, bookId, currentPage);
+      res.json(purchase);
+    } catch (error) {
+      console.error("Error updating reading progress:", error);
+      res.status(500).json({ error: "Failed to update reading progress" });
+    }
+  });
+
+  app.post('/api/verify-book-payment', isAuthenticated, async (req, res) => {
+    try {
+      const { reference, bookId } = req.body;
+      const userId = (req as any).user.id;
+
+      // Verify payment with Paystack
+      const paystackResponse = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
+        headers: {
+          'Authorization': `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+        },
+      });
+
+      const paystackData = await paystackResponse.json();
+
+      if (paystackData.status && paystackData.data.status === 'success') {
+        // Check if purchase record exists
+        let purchase = await storage.getBookPurchase(userId, bookId);
+        
+        if (purchase) {
+          // Update existing purchase
+          purchase = await storage.updateBookPurchase(purchase.id, {
+            hasPaid: true,
+            paymentId: reference,
+          });
+        } else {
+          // Create new purchase record
+          purchase = await storage.createBookPurchase({
+            userId,
+            bookId,
+            hasPaid: true,
+            paymentId: reference,
+            currentPage: 1,
+          });
+        }
+
+        res.json({ success: true, purchase });
+      } else {
+        res.status(400).json({ error: "Payment verification failed" });
+      }
+    } catch (error) {
+      console.error("Error verifying payment:", error);
+      res.status(500).json({ error: "Failed to verify payment" });
     }
   });
 

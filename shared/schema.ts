@@ -50,8 +50,22 @@ export const books = pgTable("books", {
   rating: decimal("rating", { precision: 3, scale: 2 }).default('0'),
   reviewCount: integer("review_count").default(0),
   featured: boolean("featured").default(false),
+  pageCount: integer("page_count").default(0),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Book purchases table - tracks user purchases and reading progress
+export const bookPurchases = pgTable("book_purchases", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  bookId: varchar("book_id").notNull(),
+  currentPage: integer("current_page").default(1),
+  totalPages: integer("total_pages").default(0),
+  hasPaid: boolean("has_paid").default(false),
+  paymentId: varchar("payment_id"),
+  purchaseDate: timestamp("purchase_date").defaultNow(),
+  lastReadAt: timestamp("last_read_at").defaultNow(),
 });
 
 // Videos table
@@ -163,6 +177,9 @@ export type Cart = typeof cart.$inferSelect;
 export type InsertOrder = typeof orders.$inferInsert;
 export type Order = typeof orders.$inferSelect;
 
+export type InsertBookPurchase = typeof bookPurchases.$inferInsert;
+export type BookPurchase = typeof bookPurchases.$inferSelect;
+
 // Zod schemas for validation
 export const insertBookSchema = createInsertSchema(books).omit({
   id: true,
@@ -196,4 +213,10 @@ export const insertOrderSchema = createInsertSchema(orders).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+});
+
+export const insertBookPurchaseSchema = createInsertSchema(bookPurchases).omit({
+  id: true,
+  purchaseDate: true,
+  lastReadAt: true,
 });

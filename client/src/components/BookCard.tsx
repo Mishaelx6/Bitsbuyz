@@ -6,9 +6,10 @@ import type { Book } from "@shared/schema";
 
 interface BookCardProps {
   book: Book;
+  onReadBook?: (book: Book) => void;
 }
 
-export default function BookCard({ book }: BookCardProps) {
+export default function BookCard({ book, onReadBook }: BookCardProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -59,13 +60,14 @@ export default function BookCard({ book }: BookCardProps) {
           >
             {addToCartMutation.isPending ? "Adding..." : "Add to Cart"}
           </Button>
-          {book.pdfUrl && (
+          {book.pdfUrl && onReadBook && (
             <Button 
               variant="outline"
               className="w-full border border-gray-200 text-secondary py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors duration-200"
-              onClick={() => window.open(book.pdfUrl!, '_blank')}
+              onClick={() => onReadBook(book)}
+              data-testid={`read-book-${book.id}`}
             >
-              Preview
+              Read Book
             </Button>
           )}
         </div>

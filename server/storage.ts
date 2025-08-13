@@ -6,6 +6,7 @@ import {
   siteContent,
   cart,
   orders,
+  bookPurchases,
   type User,
   type UpsertUser,
   type InsertUser,
@@ -21,6 +22,8 @@ import {
   type InsertCart,
   type Order,
   type InsertOrder,
+  type BookPurchase,
+  type InsertBookPurchase,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, like, gte, lte, desc, asc } from "drizzle-orm";
@@ -63,6 +66,12 @@ export interface IStorage {
   createOrder(order: InsertOrder): Promise<Order>;
   getOrder(id: string): Promise<Order | undefined>;
   updateOrderStatus(id: string, status: string, paystackReference?: string): Promise<Order>;
+
+  // Book purchase operations
+  getBookPurchase(userId: string, bookId: string): Promise<BookPurchase | undefined>;
+  createBookPurchase(purchase: InsertBookPurchase): Promise<BookPurchase>;
+  updateBookPurchase(id: string, purchase: Partial<InsertBookPurchase>): Promise<BookPurchase>;
+  updateReadingProgress(userId: string, bookId: string, currentPage: number): Promise<BookPurchase>;
 }
 
 export interface BookFilters {
@@ -331,6 +340,49 @@ export class DatabaseStorage implements IStorage {
       .where(eq(orders.id, id))
       .returning();
     return updatedOrder;
+  }
+
+  // Book purchase operations
+  async getBookPurchase(userId: string, bookId: string): Promise<BookPurchase | undefined> {
+    const [purchase] = await db
+      .select()
+      .from(bookPurchases)
+      .where(and(eq(bookPurchases.userId, userId), eq(bookPurchases.bookId, bookId)));
+    return purchase;
+  }
+
+  async createBookPurchase(purchase: InsertBookPurchase): Promise<BookPurchase> {
+    const [newPurchase] = await db.insert(bookPurchases).values(purchase).returning();
+    return newPurchase;
+  }
+
+  async updateBookPurchase(id: string, purchase: Partial<InsertBookPurchase>): Promise<BookPurchase> {
+    const [updatedPurchase] = await db
+      .update(bookPurchases)
+      .set({ ...purchase, lastReadAt: new Date() })
+      .where(eq(bookPurchases.id, id))
+      .returning();
+    return updatedPurchase;
+  }
+
+  async updateReadingProgress(userId: string, bookId: string, currentPage: number): Promise<BookPurchase> {
+    const existing = await this.getBookPurchase(userId, bookId);
+    
+    if (existing) {
+      const [updated] = await db
+        .update(bookPurchases)
+        .set({ currentPage, lastReadAt: new Date() })
+        .where(eq(bookPurchases.id, existing.id))
+        .returning();
+      return updated;
+    } else {
+      // Create new purchase record if it doesn't exist
+      const [created] = await db
+        .insert(bookPurchases)
+        .values({ userId, bookId, currentPage, lastReadAt: new Date() })
+        .returning();
+      return created;
+    }
   }
 }
 

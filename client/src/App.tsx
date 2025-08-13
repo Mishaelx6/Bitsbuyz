@@ -12,6 +12,7 @@ import Videos from "@/pages/Videos";
 import Cart from "@/pages/Cart";
 import Checkout from "@/pages/Checkout";
 import Admin from "@/pages/Admin";
+import AdminBooks from "@/pages/AdminBooks";
 import AuthPage from "@/pages/auth-page";
 import NotFound from "@/pages/not-found";
 import StoreComingSoon from "@/pages/store-coming-soon";
@@ -32,6 +33,7 @@ function Router() {
       <Route path="/checkout/success" component={() => <div>Payment Successful!</div>} />
       <Route path="/checkout/failed" component={() => <div>Payment Failed!</div>} />
       <Route path="/admin" component={Admin} />
+      <Route path="/admin/books" component={AdminBooks} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/store" component={StoreComingSoon} />
       <Route component={NotFound} />
