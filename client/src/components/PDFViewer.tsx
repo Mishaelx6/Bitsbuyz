@@ -68,17 +68,17 @@ export default function PDFViewer({ book, onClose }: PDFViewerProps) {
 
   // Check if user needs to pay when reaching page 4
   useEffect(() => {
-    if (currentPage >= 4 && !bookPurchase?.hasPaid && user) {
+    if (currentPage >= 4 && !bookPurchase?.hasPaid) {
       setShowPaymentModal(true);
     }
-  }, [currentPage, bookPurchase?.hasPaid, user]);
+  }, [currentPage, bookPurchase?.hasPaid]);
 
   // Update progress when page changes
   useEffect(() => {
-    if (user && currentPage > 1) {
+    if (currentPage > 1) {
       updateProgressMutation.mutate(currentPage);
     }
-  }, [currentPage, user]);
+  }, [currentPage]);
 
   const canViewPage = (page: number) => {
     if (!user) return page <= 3; // Anonymous users can only see first 3 pages

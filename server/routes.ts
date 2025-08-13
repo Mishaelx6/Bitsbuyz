@@ -422,9 +422,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Book purchase routes
-  app.get('/api/book-purchase/:bookId', isAuthenticated, async (req, res) => {
+  app.get('/api/book-purchase/:bookId', async (req, res) => {
     try {
       const { bookId } = req.params;
+      
+      // If user is not authenticated, return null (allows free reading of first 3 pages)
+      if (!req.isAuthenticated() || !(req as any).user) {
+        return res.json(null);
+      }
+      
       const userId = (req as any).user.id;
       const purchase = await storage.getBookPurchase(userId, bookId);
       res.json(purchase || null);
@@ -434,9 +440,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/book-purchase/progress', isAuthenticated, async (req, res) => {
+  app.put('/api/book-purchase/progress', async (req, res) => {
     try {
       const { bookId, currentPage } = req.body;
+      
+      // If user is not authenticated, we can still track page progress in a temporary way
+      // but won't persist it to database
+      if (!req.isAuthenticated() || !(req as any).user) {
+        return res.json({ currentPage, hasPaid: false });
+      }
+      
       const userId = (req as any).user.id;
       const purchase = await storage.updateReadingProgress(userId, bookId, currentPage);
       res.json(purchase);
