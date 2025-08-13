@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Document, Page, pdfjs } from 'react-pdf';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 import type { Book, BookPurchase } from "@shared/schema";
-import { ChevronLeft, ChevronRight, BookOpen, Lock } from "lucide-react";
+import { ChevronLeft, ChevronRight, BookOpen, Lock, ZoomIn, ZoomOut } from "lucide-react";
+
+// Configure PDF.js worker
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 interface PDFViewerProps {
   book: Book;
@@ -20,21 +24,18 @@ declare global {
 
 export default function PDFViewer({ book, onClose }: PDFViewerProps) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [numPages, setNumPages] = useState<number | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [isPaymentLoading, setIsPaymentLoading] = useState(false);
+  const [scale, setScale] = useState(1.0);
+  const [pdfError, setPdfError] = useState<string | null>(null);
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // Get the correct PDF URL for our storage system
+  // Get the correct PDF URL - now directly from Cloudinary
   const getPDFUrl = (pdfUrl: string) => {
-    if (pdfUrl.startsWith('https://storage.googleapis.com/')) {
-      // Extract file ID from storage URL and serve through our protected endpoint
-      const url = new URL(pdfUrl);
-      const pathParts = url.pathname.split('/');
-      const fileId = pathParts[pathParts.length - 1];
-      return `/pdfs/${fileId}`;
-    }
+    // Return Cloudinary URL directly for PDF.js to handle
     return pdfUrl;
   };
 
@@ -179,7 +180,7 @@ export default function PDFViewer({ book, onClose }: PDFViewerProps) {
             <div>
               <h2 className="text-xl font-bold text-gray-900" data-testid="book-title">{book.title}</h2>
               <p className="text-sm text-gray-600">
-                Page {currentPage} of {book.pageCount || 1}
+                Page {currentPage} of {numPages || book.pageCount || 1}
                 {bookPurchase?.hasPaid && <span className="ml-2 text-green-600">(Full Access)</span>}
               </p>
             </div>
@@ -190,16 +191,73 @@ export default function PDFViewer({ book, onClose }: PDFViewerProps) {
         </div>
 
         {/* PDF Content Area */}
-        <div className="relative h-96 bg-gray-100 flex items-center justify-center">
+        <div className="relative bg-gray-100 flex items-center justify-center" style={{ height: '70vh' }}>
           {book.pdfUrl ? (
-            <div className="w-full h-full flex items-center justify-center">
+            <div className="w-full h-full flex items-center justify-center overflow-auto">
               {canViewPage(currentPage) ? (
-                <iframe
-                  src={`${getPDFUrl(book.pdfUrl)}#page=${currentPage}`}
-                  className="w-full h-full border-0"
-                  title={`${book.title} - Page ${currentPage}`}
-                  data-testid="pdf-iframe"
-                />
+                <div className="flex flex-col items-center">
+                  <Document
+                    file={getPDFUrl(book.pdfUrl)}
+                    onLoadSuccess={({ numPages }) => {
+                      setNumPages(numPages);
+                      setPdfError(null);
+                    }}
+                    onLoadError={(error) => {
+                      console.error('PDF load error:', error);
+                      setPdfError('Failed to load PDF. Please check the URL.');
+                    }}
+                    loading={
+                      <div className="flex items-center justify-center p-8">
+                        <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full"></div>
+                        <span className="ml-3 text-gray-600">Loading PDF...</span>
+                      </div>
+                    }
+                    error={
+                      <div className="text-center p-8">
+                        <p className="text-red-600">{pdfError || 'Failed to load PDF'}</p>
+                        <p className="text-sm text-gray-500 mt-2">Please check the Cloudinary URL</p>
+                      </div>
+                    }
+                    data-testid="pdf-document"
+                  >
+                    <Page
+                      pageNumber={currentPage}
+                      scale={scale}
+                      loading={
+                        <div className="flex items-center justify-center p-4">
+                          <div className="animate-pulse bg-gray-200 h-96 w-72 rounded"></div>
+                        </div>
+                      }
+                      error={
+                        <div className="text-center p-4">
+                          <p className="text-red-600">Failed to load page {currentPage}</p>
+                        </div>
+                      }
+                      data-testid={`pdf-page-${currentPage}`}
+                    />
+                  </Document>
+                  
+                  {/* Zoom Controls */}
+                  <div className="flex items-center gap-2 mt-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setScale(Math.max(0.5, scale - 0.1))}
+                      data-testid="zoom-out"
+                    >
+                      <ZoomOut className="h-4 w-4" />
+                    </Button>
+                    <span className="text-sm text-gray-600 px-2">{Math.round(scale * 100)}%</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setScale(Math.min(2.0, scale + 0.1))}
+                      data-testid="zoom-in"
+                    >
+                      <ZoomIn className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
               ) : (
                 <div className="text-center p-8">
                   <Lock className="h-16 w-16 text-gray-400 mx-auto mb-4" />
@@ -244,7 +302,7 @@ export default function PDFViewer({ book, onClose }: PDFViewerProps) {
           <Button
             variant="outline"
             onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage >= (book.pageCount || 1)}
+            disabled={currentPage >= (numPages || book.pageCount || 1)}
             data-testid="next-page"
           >
             Next

@@ -27,6 +27,11 @@ Preferred communication style: Simple, everyday language.
 ✓ **Text Simplification**: Updated all "video courses" references to just "videos" across the platform
 ✓ **Navbar Simplification**: Removed category links (Leadership, Business, Self-Help, Bestsellers) and favorites icon, replaced with single "BitsBuyz Store" link
 ✓ **Store Coming Soon Page**: Created dedicated "Store Coming Soon" page with newsletter signup and feature previews
+✓ **Cloudinary Integration**: Replaced file upload system with Cloudinary URL-based storage for PDFs and images
+✓ **Admin Interface Update**: Changed admin book management to accept direct Cloudinary public URLs instead of file uploads  
+✓ **PDF.js Integration**: Enhanced PDF viewing experience with direct Cloudinary PDF rendering using react-pdf library
+✓ **URL Validation**: Added real-time validation for Cloudinary URLs in admin interface
+✓ **Enhanced PDF Viewer**: Implemented zoom controls, better error handling, and improved loading states for PDFs
 
 ## System Architecture
 
