@@ -28,6 +28,10 @@ import {
 import { db } from "./db";
 import { eq, and, like, gte, lte, desc, asc, sql } from "drizzle-orm";
 
+// Load environment variables
+import dotenv from 'dotenv';
+dotenv.config();
+
 export interface IStorage {
   // User operations
   getUser(id: string): Promise<User | undefined>;
@@ -90,6 +94,121 @@ export interface VideoFilters {
   featured?: boolean;
   sortBy?: 'title' | 'views' | 'createdAt';
   sortOrder?: 'asc' | 'desc';
+}
+
+export class MockStorage implements IStorage {
+  // Mock implementation for development without database
+  async getUser(id: string): Promise<User | undefined> {
+    return undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    return undefined;
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    throw new Error('Database not available in development mode');
+  }
+
+  async getBooks(filters?: BookFilters): Promise<Book[]> {
+    return [];
+  }
+
+  async getBook(id: string): Promise<Book | undefined> {
+    return undefined;
+  }
+
+  async createBook(book: InsertBook): Promise<Book> {
+    throw new Error('Database not available in development mode');
+  }
+
+  async updateBook(id: string, book: Partial<InsertBook>): Promise<Book> {
+    throw new Error('Database not available in development mode');
+  }
+
+  async deleteBook(id: string): Promise<void> {
+    throw new Error('Database not available in development mode');
+  }
+
+  async getVideos(filters?: VideoFilters): Promise<Video[]> {
+    return [];
+  }
+
+  async getVideo(id: string): Promise<Video | undefined> {
+    return undefined;
+  }
+
+  async createVideo(video: InsertVideo): Promise<Video> {
+    throw new Error('Database not available in development mode');
+  }
+
+  async updateVideo(id: string, video: Partial<InsertVideo>): Promise<Video> {
+    throw new Error('Database not available in development mode');
+  }
+
+  async deleteVideo(id: string): Promise<void> {
+    throw new Error('Database not available in development mode');
+  }
+
+  async getHomepageContent(): Promise<HomepageContent | undefined> {
+    return undefined;
+  }
+
+  async updateHomepageContent(content: InsertHomepageContent): Promise<HomepageContent> {
+    throw new Error('Database not available in development mode');
+  }
+
+  async getSiteContent(): Promise<SiteContent | undefined> {
+    return undefined;
+  }
+
+  async updateSiteContent(content: InsertSiteContent): Promise<SiteContent> {
+    throw new Error('Database not available in development mode');
+  }
+
+  async getCartItems(sessionId: string): Promise<Cart[]> {
+    return [];
+  }
+
+  async addToCart(item: InsertCart): Promise<Cart> {
+    throw new Error('Database not available in development mode');
+  }
+
+  async removeFromCart(sessionId: string, bookId: string): Promise<void> {
+    throw new Error('Database not available in development mode');
+  }
+
+  async clearCart(sessionId: string): Promise<void> {
+    throw new Error('Database not available in development mode');
+  }
+
+  async createOrder(order: InsertOrder): Promise<Order> {
+    throw new Error('Database not available in development mode');
+  }
+
+  async getOrder(id: string): Promise<Order | undefined> {
+    return undefined;
+  }
+
+  async updateOrderStatus(id: string, status: string, paystackReference?: string): Promise<Order> {
+    throw new Error('Database not available in development mode');
+  }
+
+  async getBookPurchase(userId: string, bookId: string): Promise<BookPurchase | undefined> {
+    return undefined;
+  }
+
+  async createBookPurchase(purchase: InsertBookPurchase): Promise<BookPurchase> {
+    throw new Error('Database not available in development mode');
+  }
+
+  async updateBookPurchase(id: string, purchase: Partial<InsertBookPurchase>): Promise<BookPurchase> {
+    throw new Error('Database not available in development mode');
+  }
+
+  async updateReadingProgress(userId: string, bookId: string, currentPage: number): Promise<BookPurchase> {
+    throw new Error('Database not available in development mode');
+  }
 }
 
 export class DatabaseStorage implements IStorage {
@@ -393,4 +512,5 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+// Export the storage instance - use mock storage if database is not available
+export const storage = process.env.DATABASE_URL ? new DatabaseStorage() : new MockStorage();

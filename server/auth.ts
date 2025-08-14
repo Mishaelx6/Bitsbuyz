@@ -8,6 +8,10 @@ import { storage } from "./storage";
 import { User as SelectUser } from "@shared/schema";
 import connectPg from "connect-pg-simple";
 
+// Load environment variables
+import dotenv from 'dotenv';
+dotenv.config();
+
 declare global {
   namespace Express {
     interface User extends SelectUser {}
@@ -31,16 +35,25 @@ async function comparePasswords(supplied: string, stored: string) {
 
 export function setupAuth(app: Express) {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
-  const pgStore = connectPg(session);
-  const sessionStore = new pgStore({
-    conString: process.env.DATABASE_URL,
-    createTableIfMissing: true,
-    ttl: sessionTtl,
-    tableName: "sessions",
-  });
+  
+  // Use memory store for development if no database is available
+  let sessionStore: session.Store;
+  if (process.env.DATABASE_URL) {
+    const pgStore = connectPg(session);
+    sessionStore = new pgStore({
+      conString: process.env.DATABASE_URL,
+      createTableIfMissing: true,
+      ttl: sessionTtl,
+      tableName: "sessions",
+    });
+  } else {
+    // Use basic memory store for development
+    sessionStore = new session.MemoryStore();
+    console.log('⚠️  Using basic memory session store for development');
+  }
 
   const sessionSettings: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET!,
+    secret: process.env.SESSION_SECRET || 'dev-secret-key',
     resave: false,
     saveUninitialized: false,
     store: sessionStore,

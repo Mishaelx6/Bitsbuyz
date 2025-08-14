@@ -6,9 +6,23 @@ import { insertBookSchema, insertVideoSchema, insertHomepageContentSchema, inser
 import { randomUUID } from "crypto";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 
+// Load environment variables
+import dotenv from 'dotenv';
+dotenv.config();
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   setupAuth(app);
+
+  // Health check endpoint (no database required)
+  app.get('/api/health', (req, res) => {
+    res.json({ 
+      status: 'ok', 
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      database: process.env.DATABASE_URL ? 'connected' : 'not configured'
+    });
+  });
 
   // Auth route is handled in auth.ts
 

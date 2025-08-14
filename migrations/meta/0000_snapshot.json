@@ -1,0 +1,807 @@
+{
+  "id": "1bd4f2d2-f88a-4ed2-9c77-c760f67f44ba",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.book_purchases": {
+      "name": "book_purchases",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "book_id": {
+          "name": "book_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "current_page": {
+          "name": "current_page",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 1
+        },
+        "total_pages": {
+          "name": "total_pages",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "has_paid": {
+          "name": "has_paid",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "payment_id": {
+          "name": "payment_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "purchase_date": {
+          "name": "purchase_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "last_read_at": {
+          "name": "last_read_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.books": {
+      "name": "books",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "price": {
+          "name": "price",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cover_image_url": {
+          "name": "cover_image_url",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pdf_url": {
+          "name": "pdf_url",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "category": {
+          "name": "category",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rating": {
+          "name": "rating",
+          "type": "numeric(3, 2)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
+        },
+        "review_count": {
+          "name": "review_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "featured": {
+          "name": "featured",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "page_count": {
+          "name": "page_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.cart": {
+      "name": "cart",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "session_id": {
+          "name": "session_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "book_id": {
+          "name": "book_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 1
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "cart_book_id_books_id_fk": {
+          "name": "cart_book_id_books_id_fk",
+          "tableFrom": "cart",
+          "tableTo": "books",
+          "columnsFrom": [
+            "book_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.homepage_content": {
+      "name": "homepage_content",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "profile_image_url": {
+          "name": "profile_image_url",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tagline": {
+          "name": "tagline",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "biography": {
+          "name": "biography",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hero_title": {
+          "name": "hero_title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hero_subtitle": {
+          "name": "hero_subtitle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "what_i_do_title": {
+          "name": "what_i_do_title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "what_i_do_description": {
+          "name": "what_i_do_description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "background_images": {
+          "name": "background_images",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.orders": {
+      "name": "orders",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "session_id": {
+          "name": "session_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total": {
+          "name": "total",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'pending'"
+        },
+        "paystack_reference": {
+          "name": "paystack_reference",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "items": {
+          "name": "items",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.sessions": {
+      "name": "sessions",
+      "schema": "",
+      "columns": {
+        "sid": {
+          "name": "sid",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "sess": {
+          "name": "sess",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expire": {
+          "name": "expire",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "IDX_session_expire": {
+          "name": "IDX_session_expire",
+          "columns": [
+            {
+              "expression": "expire",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.site_content": {
+      "name": "site_content",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "site_name": {
+          "name": "site_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Dr. Sarah Johnson'"
+        },
+        "logo_text": {
+          "name": "logo_text",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'bitsbuyz'"
+        },
+        "nav_home": {
+          "name": "nav_home",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Home'"
+        },
+        "nav_books": {
+          "name": "nav_books",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Books'"
+        },
+        "nav_videos": {
+          "name": "nav_videos",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Videos'"
+        },
+        "nav_admin": {
+          "name": "nav_admin",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Admin'"
+        },
+        "books_page_title": {
+          "name": "books_page_title",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Book Library'"
+        },
+        "books_page_subtitle": {
+          "name": "books_page_subtitle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Explore our complete collection of leadership and personal development books.'"
+        },
+        "videos_page_title": {
+          "name": "videos_page_title",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Video Library'"
+        },
+        "videos_page_subtitle": {
+          "name": "videos_page_subtitle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Watch keynotes, interviews, and thought leadership discussions from platforms worldwide.'"
+        },
+        "footer_description": {
+          "name": "footer_description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Transforming leadership through authentic storytelling. Author, speaker, and executive coach helping leaders unlock their full potential.'"
+        },
+        "footer_copyright": {
+          "name": "footer_copyright",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'© 2024 Dr. Sarah Johnson. All rights reserved.'"
+        },
+        "footer_links": {
+          "name": "footer_links",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Privacy Policy | Terms of Service'"
+        },
+        "contact_title": {
+          "name": "contact_title",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Ready to Transform Your Leadership?'"
+        },
+        "contact_subtitle": {
+          "name": "contact_subtitle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Let''s start a conversation about your leadership journey and how we can work together to unlock your full potential.'"
+        },
+        "contact_button_text": {
+          "name": "contact_button_text",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Send Message'"
+        },
+        "what_i_do_title": {
+          "name": "what_i_do_title",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'What I Do'"
+        },
+        "what_i_do_subtitle": {
+          "name": "what_i_do_subtitle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'I help leaders and organizations unlock their full potential through three core pillars of transformation.'"
+        },
+        "linkedin_url": {
+          "name": "linkedin_url",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'#'"
+        },
+        "twitter_url": {
+          "name": "twitter_url",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'#'"
+        },
+        "youtube_url": {
+          "name": "youtube_url",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'#'"
+        },
+        "instagram_url": {
+          "name": "instagram_url",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'#'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "username": {
+          "name": "username",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "password": {
+          "name": "password",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_name": {
+          "name": "last_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "profile_image_url": {
+          "name": "profile_image_url",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'user'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "users_username_unique": {
+          "name": "users_username_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "username"
+          ]
+        },
+        "users_email_unique": {
+          "name": "users_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.videos": {
+      "name": "videos",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "thumbnail_url": {
+          "name": "thumbnail_url",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "video_url": {
+          "name": "video_url",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "platform": {
+          "name": "platform",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "duration": {
+          "name": "duration",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "views": {
+          "name": "views",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "featured": {
+          "name": "featured",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
