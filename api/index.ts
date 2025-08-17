@@ -1,11 +1,14 @@
-import { registerRoutes } from '../server/routes';
 import express from 'express';
+import { createServer } from 'http';
+import { registerRoutes } from '../server/routes';
 
 // Load environment variables
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
+
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
