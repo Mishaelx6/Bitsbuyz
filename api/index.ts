@@ -1,5 +1,312 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { storage } from '../server/storage';
+import { drizzle } from 'drizzle-orm/neon-serverless';
+import { Pool } from '@neondatabase/serverless';
+import ws from 'ws';
+import * as schema from '../shared/schema';
+
+// Configure WebSocket for Neon
+import { neonConfig } from '@neondatabase/serverless';
+neonConfig.webSocketConstructor = ws;
+
+// Initialize database connection
+let db: any = null;
+if (process.env.DATABASE_URL) {
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  db = drizzle({ client: pool, schema });
+}
+
+// Simple storage implementation for Vercel API routes
+const storage = {
+  // Site content operations
+  async getSiteContent() {
+    if (!db) return null;
+    try {
+      const [content] = await db.select().from(schema.siteContent).limit(1);
+      return content;
+    } catch (error) {
+      console.error('Error fetching site content:', error);
+      return null;
+    }
+  },
+
+  async updateSiteContent(content: any) {
+    if (!db) throw new Error('Database not connected');
+    try {
+      const [updated] = await db
+        .insert(schema.siteContent)
+        .values(content)
+        .onConflictDoUpdate({
+          target: schema.siteContent.id,
+          set: content
+        })
+        .returning();
+      return updated;
+    } catch (error) {
+      console.error('Error updating site content:', error);
+      throw error;
+    }
+  },
+
+  // Book operations
+  async getBooks(filters: any = {}) {
+    if (!db) return [];
+    try {
+      let query = db.select().from(schema.books);
+      const conditions: any[] = [];
+
+      if (filters.search) {
+        conditions.push(like(schema.books.title, `%${filters.search}%`));
+      }
+      if (filters.category) {
+        conditions.push(eq(schema.books.category, filters.category));
+      }
+      if (filters.featured !== undefined) {
+        conditions.push(eq(schema.books.featured, filters.featured));
+      }
+
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
+
+      // Apply sorting
+      const sortBy = filters.sortBy || 'createdAt';
+      const sortOrder = filters.sortOrder || 'desc';
+      
+      if (sortBy === 'title') {
+        query = query.orderBy(sortOrder === 'asc' ? asc(schema.books.title) : desc(schema.books.title));
+      } else {
+        query = query.orderBy(sortOrder === 'asc' ? asc(schema.books.createdAt) : desc(schema.books.createdAt));
+      }
+
+      return await query;
+    } catch (error) {
+      console.error('Error fetching books:', error);
+      return [];
+    }
+  },
+
+  async getBook(id: string) {
+    if (!db) return null;
+    try {
+      const [book] = await db.select().from(schema.books).where(eq(schema.books.id, id));
+      return book;
+    } catch (error) {
+      console.error('Error fetching book:', error);
+      return null;
+    }
+  },
+
+  async createBook(book: any) {
+    if (!db) throw new Error('Database not connected');
+    try {
+      const [newBook] = await db.insert(schema.books).values(book).returning();
+      return newBook;
+    } catch (error) {
+      console.error('Error creating book:', error);
+      throw error;
+    }
+  },
+
+  async updateBook(id: string, book: any) {
+    if (!db) throw new Error('Database not connected');
+    try {
+      const [updatedBook] = await db
+        .update(schema.books)
+        .set({ ...book, updatedAt: new Date() })
+        .where(eq(schema.books.id, id))
+        .returning();
+      return updatedBook;
+    } catch (error) {
+      console.error('Error updating book:', error);
+      throw error;
+    }
+  },
+
+  async deleteBook(id: string) {
+    if (!db) throw new Error('Database not connected');
+    try {
+      await db.delete(schema.books).where(eq(schema.books.id, id));
+    } catch (error) {
+      console.error('Error deleting book:', error);
+      throw error;
+    }
+  },
+
+  // Video operations
+  async getVideos(filters: any = {}) {
+    if (!db) return [];
+    try {
+      let query = db.select().from(schema.videos);
+      const conditions: any[] = [];
+
+      if (filters.search) {
+        conditions.push(like(schema.videos.title, `%${filters.search}%`));
+      }
+      if (filters.platform) {
+        conditions.push(eq(schema.videos.platform, filters.platform));
+      }
+      if (filters.featured !== undefined) {
+        conditions.push(eq(schema.videos.featured, filters.featured));
+      }
+
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
+
+      // Apply sorting
+      const sortBy = filters.sortBy || 'createdAt';
+      const sortOrder = filters.sortOrder || 'desc';
+      
+      if (sortBy === 'title') {
+        query = query.orderBy(sortOrder === 'asc' ? asc(schema.videos.title) : desc(schema.videos.title));
+      } else {
+        query = query.orderBy(sortOrder === 'asc' ? asc(schema.videos.createdAt) : desc(schema.videos.createdAt));
+      }
+
+      return await query;
+    } catch (error) {
+      console.error('Error fetching videos:', error);
+      return [];
+    }
+  },
+
+  async getVideo(id: string) {
+    if (!db) return null;
+    try {
+      const [video] = await db.select().from(schema.videos).where(eq(schema.videos.id, id));
+      return video;
+    } catch (error) {
+      console.error('Error fetching video:', error);
+      return null;
+    }
+  },
+
+  async createVideo(video: any) {
+    if (!db) throw new Error('Database not connected');
+    try {
+      const [newVideo] = await db.insert(schema.videos).values(video).returning();
+      return newVideo;
+    } catch (error) {
+      console.error('Error creating video:', error);
+      throw error;
+    }
+  },
+
+  async updateVideo(id: string, video: any) {
+    if (!db) throw new Error('Database not connected');
+    try {
+      const [updatedVideo] = await db
+        .update(schema.videos)
+        .set({ ...video, updatedAt: new Date() })
+        .where(eq(schema.videos.id, id))
+        .returning();
+      return updatedVideo;
+    } catch (error) {
+      console.error('Error updating video:', error);
+      throw error;
+    }
+  },
+
+  async deleteVideo(id: string) {
+    if (!db) throw new Error('Database not connected');
+    try {
+      await db.delete(schema.videos).where(eq(schema.videos.id, id));
+    } catch (error) {
+      console.error('Error deleting video:', error);
+      throw error;
+    }
+  },
+
+  // User operations
+  async createUser(user: any) {
+    if (!db) throw new Error('Database not connected');
+    try {
+      const [newUser] = await db.insert(schema.users).values(user).returning();
+      return newUser;
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
+  },
+
+  async getUserByUsername(username: string) {
+    if (!db) return null;
+    try {
+      const [user] = await db.select().from(schema.users).where(eq(schema.users.username, username));
+      return user;
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      return null;
+    }
+  },
+
+  // Cart operations
+  async getCartItems(sessionId: string) {
+    if (!db) return [];
+    try {
+      return await db.select().from(schema.cart).where(eq(schema.cart.sessionId, sessionId));
+    } catch (error) {
+      console.error('Error fetching cart items:', error);
+      return [];
+    }
+  },
+
+  async addToCart(item: any) {
+    if (!db) throw new Error('Database not connected');
+    try {
+      const [cartItem] = await db.insert(schema.cart).values(item).returning();
+      return cartItem;
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      throw error;
+    }
+  },
+
+  async removeFromCart(sessionId: string, bookId: string) {
+    if (!db) throw new Error('Database not connected');
+    try {
+      await db
+        .delete(schema.cart)
+        .where(and(eq(schema.cart.sessionId, sessionId), eq(schema.cart.bookId, bookId)));
+    } catch (error) {
+      console.error('Error removing from cart:', error);
+      throw error;
+    }
+  },
+
+  // Homepage content operations
+  async getHomepageContent() {
+    if (!db) return null;
+    try {
+      const [content] = await db.select().from(schema.homepageContent).limit(1);
+      return content;
+    } catch (error) {
+      console.error('Error fetching homepage content:', error);
+      return null;
+    }
+  },
+
+  async updateHomepageContent(content: any) {
+    if (!db) throw new Error('Database not connected');
+    try {
+      const [updated] = await db
+        .insert(schema.homepageContent)
+        .values(content)
+        .onConflictDoUpdate({
+          target: schema.homepageContent.id,
+          set: content
+        })
+        .returning();
+      return updated;
+    } catch (error) {
+      console.error('Error updating homepage content:', error);
+      throw error;
+    }
+  }
+};
+
+// Import Drizzle operators
+import { eq, and, like, asc, desc } from 'drizzle-orm';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Set CORS headers
