@@ -385,7 +385,7 @@ export default function Admin() {
                           id="heroTitle"
                           value={homepageForm.heroTitle}
                           onChange={(e) => setHomepageForm(prev => ({ ...prev, heroTitle: e.target.value }))}
-                          placeholder="Transforming Leadership Through"
+                          placeholder="BitsBuyz - Digital Learning Platform"
                         />
                       </div>
                       <div>
@@ -405,7 +405,7 @@ export default function Admin() {
                         id="tagline"
                         value={homepageForm.tagline}
                         onChange={(e) => setHomepageForm(prev => ({ ...prev, tagline: e.target.value }))}
-                        placeholder="The stories we tell ourselves shape the leaders we become."
+                        placeholder="BitsBuyz - Digital Learning Platform"
                       />
                     </div>
 
@@ -415,7 +415,7 @@ export default function Admin() {
                         id="biography"
                         value={homepageForm.biography}
                         onChange={(e) => setHomepageForm(prev => ({ ...prev, biography: e.target.value }))}
-                        placeholder="Bestselling author of 5 transformational leadership books..."
+                        placeholder="BitsBuyz - Digital Learning Platform"
                         rows={4}
                       />
                     </div>
@@ -586,7 +586,7 @@ export default function Admin() {
                             id="siteName"
                             value={siteForm.siteName}
                             onChange={(e) => setSiteForm(prev => ({ ...prev, siteName: e.target.value }))}
-                            placeholder="Bitsbuyz Stores"
+                            placeholder="BitsBuyz Stores"
                           />
                         </div>
                         <div>
@@ -778,7 +778,7 @@ export default function Admin() {
                             id="footerCopyright"
                             value={siteForm.footerCopyright}
                             onChange={(e) => setSiteForm(prev => ({ ...prev, footerCopyright: e.target.value }))}
-                            placeholder="© 2025 Bitsbuyz Stores. All rights reserved."
+                            placeholder="© 2025 BitsBuyz. All rights reserved."
                           />
                           </div>
                           <div>

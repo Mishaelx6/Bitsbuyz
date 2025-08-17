@@ -87,29 +87,29 @@ export const videos = pgTable("videos", {
 export const siteContent = pgTable("site_content", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   // Site branding
-  siteName: varchar("site_name").notNull().default("Bitsbuyz Stores"),
-  logoText: varchar("logo_text", { length: 100 }).notNull().default("bitsbuyz"),
+  siteName: varchar("site_name").notNull().default("BitsBuyz - Digital Learning Platform"),
+  logoText: varchar("logo_text").notNull().default("BitsBuyz"),
   // Navigation
   navHome: varchar("nav_home").notNull().default("Home"),
-  navBooks: varchar("nav_books").notNull().default("Books"),
+  navBooks: varchar("nav_books").notNull().default("Digital Books"),
   navVideos: varchar("nav_videos").notNull().default("Videos"),
   navAdmin: varchar("nav_admin").notNull().default("Admin"),
   // Page headings
-  booksPageTitle: varchar("books_page_title").notNull().default("Book Library"),
-  booksPageSubtitle: text("books_page_subtitle").notNull().default("Explore our complete collection of leadership and personal development books."),
+  booksPageTitle: varchar("books_page_title").notNull().default("Digital Book Library"),
+  booksPageSubtitle: varchar("books_page_subtitle").notNull().default("Explore our complete collection of digital books and educational content."),
   videosPageTitle: varchar("videos_page_title").notNull().default("Video Library"),
-  videosPageSubtitle: text("videos_page_subtitle").notNull().default("Watch keynotes, interviews, and thought leadership discussions from platforms worldwide."),
+  videosPageSubtitle: varchar("videos_page_subtitle").notNull().default("Watch educational videos and entertainment content."),
   // Footer content
-  footerDescription: text("footer_description").notNull().default("Transforming leadership through authentic storytelling. Author, speaker, and executive coach helping leaders unlock their full potential."),
-  footerCopyright: varchar("footer_copyright").notNull().default("© 2024 Bitsbuyz Stores. All rights reserved."),
+  footerDescription: varchar("footer_description").notNull().default("BitsBuyz is a Nigerian based e-commerce startup delivering seamless digital learning experiences with premium quality content accessible 24/7."),
+  footerCopyright: varchar("footer_copyright").notNull().default("© 2024 BitsBuyz. All rights reserved."),
   footerLinks: varchar("footer_links").notNull().default("Privacy Policy | Terms of Service"),
   // Contact section
-  contactTitle: varchar("contact_title").notNull().default("Ready to Transform Your Leadership?"),
-  contactSubtitle: text("contact_subtitle").notNull().default("Let's start a conversation about your leadership journey and how we can work together to unlock your full potential."),
+  contactTitle: varchar("contact_title").notNull().default("Get In Touch"),
+  contactSubtitle: varchar("contact_subtitle").notNull().default("Contact us for any inquiries about our digital learning platform."),
   contactButtonText: varchar("contact_button_text").notNull().default("Send Message"),
   // What I Do section
-  whatIDoTitle: varchar("what_i_do_title").notNull().default("What I Do"),
-  whatIDoSubtitle: text("what_i_do_subtitle").notNull().default("I help leaders and organizations unlock their full potential through three core pillars of transformation."),
+  whatIDoTitle: varchar("what_i_do_title").notNull().default("What We Do"),
+  whatIDoSubtitle: varchar("what_i_do_subtitle").notNull().default("We provide seamless digital learning experiences with digital books, videos, and premium quality content accessible 24/7."),
   // Social links
   linkedinUrl: varchar("linkedin_url").default("#"),
   twitterUrl: varchar("twitter_url").default("#"),

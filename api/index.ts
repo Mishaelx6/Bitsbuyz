@@ -339,24 +339,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         try {
           const content = await storage.getSiteContent();
           return res.json(content || {
-            siteName: "Bitsbuyz Stores",
-            logoText: "bitsbuyz",
+            siteName: "BitsBuyz - Digital Learning Platform",
+            logoText: "BitsBuyz",
             navHome: "Home",
-            navBooks: "Books",
+            navBooks: "Digital Books",
             navVideos: "Videos",
             navAdmin: "Admin",
-            booksPageTitle: "Book Library",
-            booksPageSubtitle: "Explore our complete collection of books.",
+            booksPageTitle: "Digital Book Library",
+            booksPageSubtitle: "Explore our complete collection of digital books and educational content.",
             videosPageTitle: "Video Library",
-            videosPageSubtitle: "Watch videos and insights.",
-            footerDescription: "Your trusted destination for quality products and exceptional service.",
-            footerCopyright: "© 2024 Bitsbuyz Stores. All rights reserved.",
+            videosPageSubtitle: "Watch educational videos and entertainment content.",
+            footerDescription: "BitsBuyz is a Nigerian based e-commerce startup delivering seamless digital learning experiences with premium quality content accessible 24/7.",
+            footerCopyright: "© 2024 BitsBuyz. All rights reserved.",
             footerLinks: "Privacy Policy | Terms of Service",
             contactTitle: "Get In Touch",
-            contactSubtitle: "Contact us for any inquiries.",
+            contactSubtitle: "Contact us for any inquiries about our digital learning platform.",
             contactButtonText: "Send Message",
             whatIDoTitle: "What We Do",
-            whatIDoSubtitle: "We provide quality products and exceptional service.",
+            whatIDoSubtitle: "We provide seamless digital learning experiences with digital books, videos, and premium quality content accessible 24/7.",
             linkedinUrl: "#",
             twitterUrl: "#",
             youtubeUrl: "#",
@@ -645,12 +645,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const content = await storage.getHomepageContent();
         return res.json(content || {
           profileImageUrl: 'https://example.com/default-profile.jpg',
-          tagline: 'Welcome to Bitsbuyz Stores',
-          biography: 'Your trusted destination for quality products and exceptional service.',
-          heroTitle: 'Welcome to Bitsbuyz Stores',
-          heroSubtitle: 'Your trusted destination for quality products and exceptional service.',
+          tagline: 'Digital Learning Platform',
+          biography: 'BitsBuyz is a Nigerian based e-commerce startup built to deliver seamless, mobile-first online shopping Experience. BitsBuyz aim to capture a significant share in Nigeria growing e-commerce market projected to reach USD 33 Billion by 2026 while expanding globally through strategic partnership and innovative marketing.',
+          heroTitle: 'Digital Learning Platform',
+          heroSubtitle: 'Seamless Online Shopping Experience',
           whatIDoTitle: 'What We Do',
-          whatIDoDescription: 'We provide quality products and exceptional service to meet your needs.'
+          whatIDoDescription: 'We provide seamless digital learning experiences with digital books, videos, and premium quality content accessible 24/7.',
+          stats: {
+            digitalBooks: '50+',
+            videos: '25+',
+            happyCustomers: '1000+'
+          },
+          features: [
+            'Browse Digital Books',
+            'Watch Videos', 
+            'Instant Download',
+            '24/7 Access',
+            'Premium Quality'
+          ]
         });
       } catch (error) {
         console.error('Error fetching homepage content:', error);
