@@ -12,12 +12,12 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
           <div className="text-center">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-primary leading-tight mb-6">
-              Welcome to Dr. Sarah Johnson's
-              <span className="text-accent block">Leadership Platform</span>
+              Welcome to
+              <span className="text-accent block">Bitsbuyz Stores</span>
             </h1>
             <p className="text-xl text-secondary mb-8 max-w-3xl mx-auto leading-relaxed">
-              Transform your leadership through authentic storytelling. Access exclusive books, 
-              videos, and insights from a renowned author and thought leader.
+              Your trusted destination for quality products and exceptional service. 
+              Discover a wide range of products to meet your needs.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 

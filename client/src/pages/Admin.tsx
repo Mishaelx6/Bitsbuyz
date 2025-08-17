@@ -586,7 +586,7 @@ export default function Admin() {
                             id="siteName"
                             value={siteForm.siteName}
                             onChange={(e) => setSiteForm(prev => ({ ...prev, siteName: e.target.value }))}
-                            placeholder="Dr. Sarah Johnson"
+                            placeholder="Bitsbuyz Stores"
                           />
                         </div>
                         <div>
@@ -774,12 +774,12 @@ export default function Admin() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <Label htmlFor="footerCopyright">Copyright Text</Label>
-                            <Input
-                              id="footerCopyright"
-                              value={siteForm.footerCopyright}
-                              onChange={(e) => setSiteForm(prev => ({ ...prev, footerCopyright: e.target.value }))}
-                              placeholder="© 2025 Dr. Sarah Johnson. All rights reserved."
-                            />
+                                                      <Input
+                            id="footerCopyright"
+                            value={siteForm.footerCopyright}
+                            onChange={(e) => setSiteForm(prev => ({ ...prev, footerCopyright: e.target.value }))}
+                            placeholder="© 2025 Bitsbuyz Stores. All rights reserved."
+                          />
                           </div>
                           <div>
                             <Label htmlFor="footerLinks">Footer Links (JSON format)</Label>

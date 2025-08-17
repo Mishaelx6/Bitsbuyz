@@ -63,7 +63,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put('/api/site-content', isAdmin, async (req, res) => {
     try {
       const validatedContent = insertSiteContentSchema.parse({
-        siteName: req.body.siteName || "Dr. Sarah Johnson",
+        siteName: req.body.siteName || "Bitsbuyz Stores",
         logoText: req.body.logoText || "bitsbuyz",
         navHome: req.body.navHome || "Home",
         navBooks: req.body.navBooks || "Books",
@@ -74,7 +74,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         videosPageTitle: req.body.videosPageTitle || "Video Library",
         videosPageSubtitle: req.body.videosPageSubtitle || "Watch keynotes, interviews, and thought leadership discussions from platforms worldwide.",
         footerDescription: req.body.footerDescription || "Transforming leadership through authentic storytelling. Author, speaker, and executive coach helping leaders unlock their full potential.",
-        footerCopyright: req.body.footerCopyright || "© 2024 Dr. Sarah Johnson. All rights reserved.",
+        footerCopyright: req.body.footerCopyright || "© 2024 Bitsbuyz Stores. All rights reserved.",
         footerLinks: req.body.footerLinks || "Privacy Policy | Terms of Service",
         contactTitle: req.body.contactTitle || "Ready to Transform Your Leadership?",
         contactSubtitle: req.body.contactSubtitle || "Let's start a conversation about your leadership journey and how we can work together to unlock your full potential.",

@@ -87,7 +87,7 @@ export const videos = pgTable("videos", {
 export const siteContent = pgTable("site_content", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   // Site branding
-  siteName: varchar("site_name").notNull().default("Dr. Sarah Johnson"),
+  siteName: varchar("site_name").notNull().default("Bitsbuyz Stores"),
   logoText: varchar("logo_text", { length: 100 }).notNull().default("bitsbuyz"),
   // Navigation
   navHome: varchar("nav_home").notNull().default("Home"),
@@ -101,7 +101,7 @@ export const siteContent = pgTable("site_content", {
   videosPageSubtitle: text("videos_page_subtitle").notNull().default("Watch keynotes, interviews, and thought leadership discussions from platforms worldwide."),
   // Footer content
   footerDescription: text("footer_description").notNull().default("Transforming leadership through authentic storytelling. Author, speaker, and executive coach helping leaders unlock their full potential."),
-  footerCopyright: varchar("footer_copyright").notNull().default("© 2024 Dr. Sarah Johnson. All rights reserved."),
+  footerCopyright: varchar("footer_copyright").notNull().default("© 2024 Bitsbuyz Stores. All rights reserved."),
   footerLinks: varchar("footer_links").notNull().default("Privacy Policy | Terms of Service"),
   // Contact section
   contactTitle: varchar("contact_title").notNull().default("Ready to Transform Your Leadership?"),
