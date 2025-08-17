@@ -117,12 +117,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       // Convert Google Drive URLs to direct access format
-      const modifiedBookData = {
-        ...bookData,
-        coverImageUrl: convertGoogleDriveUrl(bookData.coverImageUrl, 'image'),
-        pdfUrl: convertGoogleDriveUrl(bookData.pdfUrl, 'pdf')
-      };
-      
+    const modifiedBookData = {
+  ...bookData,
+  coverImageUrl: bookData.coverImageUrl,
+  pdfUrl: bookData.pdfUrl
+};
+
       const validatedBook = insertBookSchema.parse(modifiedBookData);
       const book = await storage.createBook(validatedBook);
       res.status(201).json(book);

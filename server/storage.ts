@@ -330,8 +330,6 @@ export class DatabaseStorage implements IStorage {
       query = query.orderBy(sortOrder === 'asc' ? asc(videos.title) : desc(videos.title));
     } else if (sortBy === 'views') {
       query = query.orderBy(sortOrder === 'asc' ? asc(videos.views) : desc(videos.views));
-    } else if (sortBy === 'platform') {
-      query = query.orderBy(sortOrder === 'asc' ? asc(videos.platform) : desc(videos.platform));
     } else {
       query = query.orderBy(sortOrder === 'asc' ? asc(videos.createdAt) : desc(videos.createdAt));
     }
