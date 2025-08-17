@@ -24,12 +24,12 @@ import {
   type InsertOrder,
   type BookPurchase,
   type InsertBookPurchase,
-} from "@shared/schema";
+} from "../shared/schema";
 import { db } from "./db";
 import { eq, and, like, gte, lte, desc, asc, sql } from "drizzle-orm";
 
 // Load environment variables
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 dotenv.config();
 
 export interface IStorage {
@@ -37,6 +37,7 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  upsertUser(user: Partial<InsertUser> & { id: string }): Promise<User>;
 
   // Book operations
   getBooks(filters?: BookFilters): Promise<Book[]>;
@@ -107,6 +108,10 @@ export class MockStorage implements IStorage {
   }
 
   async createUser(user: InsertUser): Promise<User> {
+    throw new Error('Database not available in development mode');
+  }
+
+  async upsertUser(user: Partial<InsertUser> & { id: string }): Promise<User> {
     throw new Error('Database not available in development mode');
   }
 
@@ -229,6 +234,27 @@ export class DatabaseStorage implements IStorage {
       .values(userData)
       .returning();
     return user;
+  }
+
+  async upsertUser(userData: Partial<InsertUser> & { id: string }): Promise<User> {
+    const existingUser = await this.getUser(userData.id);
+    
+    if (existingUser) {
+      // Update existing user
+      const [updatedUser] = await db
+        .update(users)
+        .set({ ...userData, updatedAt: new Date() })
+        .where(eq(users.id, userData.id))
+        .returning();
+      return updatedUser;
+    } else {
+      // Create new user
+      const [newUser] = await db
+        .insert(users)
+        .values(userData as InsertUser)
+        .returning();
+      return newUser;
+    }
   }
 
   // Book operations
@@ -420,7 +446,7 @@ export class DatabaseStorage implements IStorage {
       // Update quantity
       const [updated] = await db
         .update(cart)
-        .set({ quantity: (existing.quantity || 0) + (item.quantity || 1) })
+        .set({ quantity: (existing.quantity || 0) + ((item as any).quantity || 1) })
         .where(eq(cart.id, existing.id))
         .returning();
       return updated;

@@ -4,7 +4,7 @@ import ws from 'ws';
 import * as schema from '../shared/schema';
 
 // Load environment variables
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 dotenv.config();
 
 // Configure WebSocket for Neon

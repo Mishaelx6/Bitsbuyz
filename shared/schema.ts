@@ -10,7 +10,7 @@ import {
   integer,
   boolean,
 } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
+
 import { z } from "zod";
 
 // Session storage table for Replit Auth
@@ -181,44 +181,92 @@ export type InsertBookPurchase = typeof bookPurchases.$inferInsert;
 export type BookPurchase = typeof bookPurchases.$inferSelect;
 
 // Zod schemas for validation
-export const insertBookSchema = createInsertSchema(books).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-}).extend({
+export const insertBookSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
   price: z.string().regex(/^\d+(\.\d{1,2})?$/, "Price must be a valid decimal number"),
+  coverImageUrl: z.string().url("Cover image URL must be valid"),
+  pdfUrl: z.string().url("PDF URL must be valid"),
+  category: z.string().min(1, "Category is required"),
+  pageCount: z.number().int().positive("Page count must be a positive integer"),
+  featured: z.boolean().default(false),
 });
 
-export const insertVideoSchema = createInsertSchema(videos).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
+export const insertVideoSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  thumbnailUrl: z.string().url("Thumbnail URL must be valid"),
+  videoUrl: z.string().url("Video URL must be valid"),
+  platform: z.string().min(1, "Platform is required"),
+  featured: z.boolean().default(false),
+  duration: z.string().optional(),
+  views: z.number().int().nonnegative("Views must be non-negative").default(0),
 });
 
-export const insertSiteContentSchema = createInsertSchema(siteContent).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
+export const insertSiteContentSchema = z.object({
+  siteName: z.string().min(1, "Site name is required"),
+  logoText: z.string().min(1, "Logo text is required"),
+  navHome: z.string().min(1, "Navigation home text is required"),
+  navBooks: z.string().min(1, "Navigation books text is required"),
+  navVideos: z.string().min(1, "Navigation videos text is required"),
+  navAdmin: z.string().min(1, "Navigation admin text is required"),
+  booksPageTitle: z.string().min(1, "Books page title is required"),
+  booksPageSubtitle: z.string().min(1, "Books page subtitle is required"),
+  videosPageTitle: z.string().min(1, "Videos page title is required"),
+  videosPageSubtitle: z.string().min(1, "Videos page subtitle is required"),
+  footerDescription: z.string().min(1, "Footer description is required"),
+  footerCopyright: z.string().min(1, "Footer copyright is required"),
+  footerLinks: z.string().min(1, "Footer links are required"),
+  contactTitle: z.string().min(1, "Contact title is required"),
+  contactSubtitle: z.string().min(1, "Contact subtitle is required"),
+  contactButtonText: z.string().min(1, "Contact button text is required"),
+  whatIDoTitle: z.string().min(1, "What I do title is required"),
+  whatIDoSubtitle: z.string().min(1, "What I do subtitle is required"),
+  linkedinUrl: z.string().url("LinkedIn URL must be valid").optional(),
+  twitterUrl: z.string().url("Twitter URL must be valid").optional(),
+  youtubeUrl: z.string().url("YouTube URL must be valid").optional(),
+  instagramUrl: z.string().url("Instagram URL must be valid").optional(),
 });
 
-export const insertHomepageContentSchema = createInsertSchema(homepageContent).omit({
-  id: true,
-  updatedAt: true,
+export const insertHomepageContentSchema = z.object({
+  profileImageUrl: z.string().url("Profile image URL must be valid"),
+  tagline: z.string().min(1, "Tagline is required"),
+  biography: z.string().min(1, "Biography is required"),
+  heroTitle: z.string().min(1, "Hero title is required"),
+  heroSubtitle: z.string().min(1, "Hero subtitle is required"),
+  whatIDoTitle: z.string().min(1, "What I do title is required"),
+  whatIDoDescription: z.string().min(1, "What I do description is required"),
+  backgroundImages: z.array(z.string()).default([]),
 });
 
-export const insertCartSchema = createInsertSchema(cart).omit({
-  id: true,
-  createdAt: true,
+export const insertCartSchema = z.object({
+  sessionId: z.string().min(1, "Session ID is required"),
+  bookId: z.string().min(1, "Book ID is required"),
+  quantity: z.number().int().positive("Quantity must be a positive integer").default(1),
 });
 
-export const insertOrderSchema = createInsertSchema(orders).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
+export const insertOrderSchema = z.object({
+  sessionId: z.string().min(1, "Session ID is required"),
+  email: z.string().email("Valid email is required"),
+  total: z.string().regex(/^\d+(\.\d{1,2})?$/, "Total must be a valid decimal number"),
+  status: z.string().default('pending'),
+  paystackReference: z.string().optional(),
+  items: z.array(z.any()).min(1, "Order must contain at least one item"),
 });
 
-export const insertBookPurchaseSchema = createInsertSchema(bookPurchases).omit({
-  id: true,
-  purchaseDate: true,
-  lastReadAt: true,
+export const insertBookPurchaseSchema = z.object({
+  userId: z.string().min(1, "User ID is required"),
+  bookId: z.string().min(1, "Book ID is required"),
+  currentPage: z.number().int().nonnegative("Current page must be non-negative").default(0),
+  hasPaid: z.boolean().default(false),
+  paymentId: z.string().optional(),
 });
+
+// Partial schemas for updates
+export const updateBookSchema = insertBookSchema.partial();
+export const updateVideoSchema = insertVideoSchema.partial();
+export const updateSiteContentSchema = insertSiteContentSchema.partial();
+export const updateHomepageContentSchema = insertHomepageContentSchema.partial();
+export const updateCartSchema = insertCartSchema.partial();
+export const updateOrderSchema = insertOrderSchema.partial();
+export const updateBookPurchaseSchema = insertBookPurchaseSchema.partial();

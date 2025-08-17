@@ -2,12 +2,12 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated, isAdmin } from "./auth";
-import { insertBookSchema, insertVideoSchema, insertHomepageContentSchema, insertSiteContentSchema, insertCartSchema, insertBookPurchaseSchema } from "@shared/schema";
+import { insertBookSchema, insertVideoSchema, insertHomepageContentSchema, insertSiteContentSchema, insertCartSchema, insertBookPurchaseSchema, updateBookSchema, updateVideoSchema, updateHomepageContentSchema, updateSiteContentSchema } from "../shared/schema";
 import { randomUUID } from "crypto";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 
 // Load environment variables
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 dotenv.config();
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -29,8 +29,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Homepage content routes
   app.put('/api/homepage', isAdmin, async (req, res) => {
     try {
-      const validatedData = insertHomepageContentSchema.parse(req.body);
-      const content = await storage.updateHomepageContent(validatedData);
+      const validatedContent = insertHomepageContentSchema.parse({
+        profileImageUrl: req.body.profileImageUrl ?? "https://example.com/default-profile.jpg",
+        tagline: req.body.tagline ?? "Default tagline",
+        biography: req.body.biography ?? "Default biography",
+        heroTitle: req.body.heroTitle ?? "Default hero title",
+        heroSubtitle: req.body.heroSubtitle ?? "Default hero subtitle",
+        whatIDoTitle: req.body.whatIDoTitle ?? "Default what I do title",
+        whatIDoDescription: req.body.whatIDoDescription ?? "Default what I do description",
+        backgroundImages: req.body.backgroundImages ?? [],
+      });
+      const content = await storage.updateHomepageContent(validatedContent as any);
       res.json(content);
     } catch (error) {
       console.error("Error updating homepage content:", error);
@@ -53,8 +62,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Site content routes
   app.put('/api/site-content', isAdmin, async (req, res) => {
     try {
-      const validatedData = insertSiteContentSchema.parse(req.body);
-      const content = await storage.updateSiteContent(validatedData);
+      const validatedContent = insertSiteContentSchema.parse({
+        siteName: req.body.siteName || "Dr. Sarah Johnson",
+        logoText: req.body.logoText || "bitsbuyz",
+        navHome: req.body.navHome || "Home",
+        navBooks: req.body.navBooks || "Books",
+        navVideos: req.body.navVideos || "Videos",
+        navAdmin: req.body.navAdmin || "Admin",
+        booksPageTitle: req.body.booksPageTitle || "Book Library",
+        booksPageSubtitle: req.body.booksPageSubtitle || "Explore our complete collection of leadership and personal development books.",
+        videosPageTitle: req.body.videosPageTitle || "Video Library",
+        videosPageSubtitle: req.body.videosPageSubtitle || "Watch keynotes, interviews, and thought leadership discussions from platforms worldwide.",
+        footerDescription: req.body.footerDescription || "Transforming leadership through authentic storytelling. Author, speaker, and executive coach helping leaders unlock their full potential.",
+        footerCopyright: req.body.footerCopyright || "© 2024 Dr. Sarah Johnson. All rights reserved.",
+        footerLinks: req.body.footerLinks || "Privacy Policy | Terms of Service",
+        contactTitle: req.body.contactTitle || "Ready to Transform Your Leadership?",
+        contactSubtitle: req.body.contactSubtitle || "Let's start a conversation about your leadership journey and how we can work together to unlock your full potential.",
+        contactButtonText: req.body.contactButtonText || "Send Message",
+        whatIDoTitle: req.body.whatIDoTitle || "What I Do",
+        whatIDoSubtitle: req.body.whatIDoSubtitle || "I help leaders and organizations unlock their full potential through three core pillars of transformation.",
+        linkedinUrl: req.body.linkedinUrl || "#",
+        twitterUrl: req.body.twitterUrl || "#",
+        youtubeUrl: req.body.youtubeUrl || "#",
+        instagramUrl: req.body.instagramUrl || "#",
+      });
+      const content = await storage.updateSiteContent(validatedContent);
       res.json(content);
     } catch (error) {
       console.error("Error updating site content:", error);
@@ -108,6 +140,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Helper function to convert Google Drive URLs to direct access format
+  const convertGoogleDriveUrl = (url: string, type: 'image' | 'pdf') => {
+    if (!url) return url;
+    
+    const fileIdMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if (!fileIdMatch) return url;
+    
+    const fileId = fileIdMatch[1];
+    
+    if (type === 'pdf') {
+      // For PDFs, use the preview URL that works with PDF.js
+      return `https://drive.google.com/file/d/${fileId}/preview`;
+    } else {
+      // For images, use direct download URL  
+      return `https://drive.google.com/uc?export=download&id=${fileId}`;
+    }
+  };
+
   app.post('/api/books', isAdmin, async (req, res) => {
     try {
       // Ensure price is always a string
@@ -117,14 +167,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       // Convert Google Drive URLs to direct access format
-    const modifiedBookData = {
-  ...bookData,
-  coverImageUrl: bookData.coverImageUrl,
-  pdfUrl: bookData.pdfUrl
-};
+      const modifiedBookData = {
+        title: bookData.title ?? "Untitled Book",
+        description: bookData.description ?? "No description provided",
+        price: bookData.price ?? "0",
+        coverImageUrl: convertGoogleDriveUrl(bookData.coverImageUrl, 'image'),
+        pdfUrl: convertGoogleDriveUrl(bookData.pdfUrl, 'pdf'),
+        category: bookData.category ?? "General",
+        pageCount: bookData.pageCount ?? 0,
+        featured: bookData.featured ?? false,
+      };
 
       const validatedBook = insertBookSchema.parse(modifiedBookData);
-      const book = await storage.createBook(validatedBook);
+      const book = await storage.createBook(validatedBook as any);
       res.status(201).json(book);
     } catch (error) {
       console.error("Error creating book:", error);
@@ -134,7 +189,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put('/api/books/:id', isAdmin, async (req, res) => {
     try {
-      const validatedBook = insertBookSchema.partial().parse(req.body);
+      const validatedBook = updateBookSchema.parse(req.body);
       const book = await storage.updateBook(req.params.id, validatedBook);
       res.json(book);
     } catch (error) {
@@ -187,8 +242,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/videos', isAuthenticated, async (req, res) => {
     try {
-      const validatedVideo = insertVideoSchema.parse(req.body);
-      const video = await storage.createVideo(validatedVideo);
+      const validatedVideo = insertVideoSchema.parse({
+        title: req.body.title ?? "Untitled Video",
+        description: req.body.description ?? "No description provided",
+        thumbnailUrl: req.body.thumbnailUrl ?? req.body.url ?? "https://example.com/default-thumbnail.jpg",
+        videoUrl: req.body.videoUrl ?? req.body.url ?? "https://example.com/default-video.mp4",
+        platform: req.body.platform ?? "Unknown",
+        featured: req.body.featured ?? false,
+        duration: req.body.duration,
+        views: req.body.views ?? 0,
+      });
+      const video = await storage.createVideo(validatedVideo as any);
       res.status(201).json(video);
     } catch (error) {
       console.error("Error creating video:", error);
@@ -198,7 +262,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put('/api/videos/:id', isAuthenticated, async (req, res) => {
     try {
-      const validatedVideo = insertVideoSchema.partial().parse(req.body);
+      const validatedVideo = updateVideoSchema.parse(req.body);
       const video = await storage.updateVideo(req.params.id, validatedVideo);
       res.json(video);
     } catch (error) {
@@ -233,10 +297,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const sessionId = req.sessionID || randomUUID();
       const cartItem = insertCartSchema.parse({
-        ...req.body,
+        bookId: req.body.bookId ?? "",
         sessionId,
+        quantity: req.body.quantity ?? 1,
       });
-      const item = await storage.addToCart(cartItem);
+      const item = await storage.addToCart(cartItem as any);
       res.status(201).json(item);
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -496,7 +561,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           purchase = await storage.updateBookPurchase(purchase.id, {
             hasPaid: true,
             paymentId: reference,
-          });
+          } as any);
         } else {
           // Create new purchase record
           purchase = await storage.createBookPurchase({
@@ -505,7 +570,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             hasPaid: true,
             paymentId: reference,
             currentPage: 1,
-          });
+          } as any);
         }
 
         res.json({ success: true, purchase });
