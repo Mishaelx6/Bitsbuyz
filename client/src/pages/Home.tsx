@@ -16,15 +16,15 @@ import type { Book, Video as VideoType, HomepageContent } from "@shared/schema";
 // Background images for the hero section - African themes and people
 const backgroundImages = [
   // African students learning with technology
-  'https://images.unsplash.com/photo-1544717297-fa95b6ee9643?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+  'https://images.unsplash.com/photo-1739302750685-122e3b768b5a?q=80&w=871&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   // African woman reading and studying
-  'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+  'https://images.unsplash.com/photo-1588580000645-4562a6d2c839?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Ym9vayUyMGxpYnJhcnl8ZW58MHx8MHx8fDA%3D',
   // African professionals in modern office setting
-  'https://images.unsplash.com/photo-1594736797933-d0c8ba448b8d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+  'https://media.istockphoto.com/id/2147641778/photo/serene-reading-time-at-home.webp?a=1&b=1&s=612x612&w=0&k=20&c=R5FaPseOtdWhee9qQocJV_q3O-9OZd8020eX4-Eo56w=',
   // African teacher or speaker presenting
-  'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+  'https://images.unsplash.com/photo-1580974928064-f0aeef70895a?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   // African business people in technology environment
-  'https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+  'https://plus.unsplash.com/premium_photo-1701173484286-51d89dd675c2?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
 ];
 
 export default function Home() {
@@ -96,14 +96,14 @@ export default function Home() {
               </div>
               
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6">
-                {homepageContent?.heroTitle || "Transform Your Mind with"}
+                {homepageContent?.heroTitle || "Seamless Online Shopping Expirience"}
                 <span className="block bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                  Digital Books & Videos
+                Digital Books & Videos
                 </span>
               </h1>
               
               <p className="text-xl sm:text-2xl text-gray-200 leading-relaxed mb-8 max-w-3xl mx-auto">
-                {homepageContent?.biography || "Discover thousands of premium digital books and exclusive videos. Download instantly, learn anywhere, anytime."}
+                {homepageContent?.biography || "BitsBuyz is a Nigerian based e-commerce startup built to deliver seamless, mobile-first online shopping Experience. BitsBuys aim to capture a significant share in Nigeria growing e-commerce market projected to reach USD 33 Billion by 2026 while expanding globally through strategic partnership and innovative marketing"}
               </p>
             </div>
 
